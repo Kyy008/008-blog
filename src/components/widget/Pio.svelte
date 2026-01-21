@@ -1,114 +1,144 @@
 <script>
-import { onDestroy, onMount } from "svelte";
-import { pioConfig } from "@/config";
+  import { onMount, onDestroy } from "svelte";
+  import { pioConfig } from "@/config";
 
-// 将配置转换为 Pio 插件需要的格式
-const pioOptions = {
-	mode: pioConfig.mode,
-	hidden: pioConfig.hiddenOnMobile,
-	content: pioConfig.dialog || {},
-	model: pioConfig.models || ["/pio/models/pio/model.json"],
-};
+  let oml2dContainer;
+  let idleTimer;
+  let resetIdleTimer;
+  let handleInteraction;
 
-// 全局Pio实例引用
-let pioInstance = null;
-let pioInitialized = false;
-let pioContainer;
-let pioCanvas;
+  onMount(async () => {
+    if (!pioConfig.enable) return;
+    if (pioConfig.hiddenOnMobile && window.matchMedia("(max-width: 1280px)").matches) return;
+    
+    // Check if the container is available
+    if (!oml2dContainer) return;
 
-// 样式已通过 Layout.astro 静态引入，无需动态加载
+    try {
+      const { loadOml2d } = await import("oh-my-live2d");
+      const oml2d = await loadOml2d({
+        parentElement: oml2dContainer,
+        models: [
+          {
+            path: pioConfig.models[0],
+            scale: 0.15,
+            position: [-170, -110],
+            stageStyle: {
+              height: 250,
+              width: 250
+            }
+          }
+        ],
+        dockedPosition: pioConfig.position || 'left',
+        mobileDisplay: !pioConfig.hiddenOnMobile,
+        tips: {
+          welcomeTips: {
+            duration: 4000,
+            priority: 3,
+            message: {
+              daybreak: '早上好！今天也要加油哦！',
+              morning: '上午好！工作学习顺利吗？',
+              noon: '中午了，午饭时间到了，要注意休息。',
+              afternoon: '下午好！打起精神来，继续努力吧！',
+              dusk: '傍晚了，窗外的夕阳很美呢。',
+              night: '晚上好，今天过得怎么样？',
+              lateNight: '已经很晚了，早点休息哦'
+            }
+          },
+          // 禁用原生 idleTips，改为手动实现
+          // idleTips: { ... }, 
+          copyTips: {
+            duration: 3000,
+            priority: 3,
+            message: ['复制了什么内容呢？']
+          }
+        }
+      });
 
-// 等待 DOM 加载完成后再初始化 Pio
-function initPio() {
-	if (typeof window !== "undefined" && typeof Paul_Pio !== "undefined") {
-		try {
-			// 确保DOM元素存在
-			if (pioContainer && pioCanvas && !pioInitialized) {
-				pioInstance = new Paul_Pio(pioOptions);
-				pioInitialized = true;
-				console.log("Pio initialized successfully (Svelte)");
-			} else if (!pioContainer || !pioCanvas) {
-				console.warn("Pio DOM elements not found, retrying...");
-				setTimeout(initPio, 100);
-			}
-		} catch (e) {
-			console.error("Pio initialization error:", e);
-		}
-	} else {
-		// 如果 Paul_Pio 还未定义，稍后再试
-		setTimeout(initPio, 100);
-	}
-}
+      // --- 自定义闲置检测逻辑 ---
+      const idleMessages = [
+        '好久没动了，是在发呆吗？',
+        '你去哪里了呢...'
+      ];
+      
+      resetIdleTimer = () => {
+        if (idleTimer) clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+          const randomMsg = idleMessages[Math.floor(Math.random() * idleMessages.length)];
+          if (oml2d && oml2d.tipsMessage) {
+            oml2d.tipsMessage(randomMsg, 3000, 2);
+          }
+        }, 15000); // 10秒无操作触发
+      };
 
-// 样式已通过 Layout.astro 静态引入，无需动态加载函数
+      handleInteraction = () => {
+        resetIdleTimer();
+      };
 
-// 加载必要的脚本
-function loadPioAssets() {
-	if (typeof window === "undefined") return;
+      // 监听用户交互事件
+      window.addEventListener('mousemove', handleInteraction);
+      window.addEventListener('keydown', handleInteraction);
+      window.addEventListener('click', handleInteraction);
+      window.addEventListener('scroll', handleInteraction);
 
-	// 样式已通过 Layout.astro 静态引入
+      // 初始化计时器
+      resetIdleTimer();
 
-	// 加载JS脚本
-	const loadScript = (src, id) => {
-		return new Promise((resolve, reject) => {
-			if (document.querySelector(`#${id}`)) {
-				resolve();
-				return;
-			}
-			const script = document.createElement("script");
-			script.id = id;
-			script.src = src;
-			script.onload = resolve;
-			script.onerror = reject;
-			document.head.appendChild(script);
-		});
-	};
+      // --- Hover Actions ---
+      const hoverActions = [
+        { selector: 'a[href="/"]', text: '这里是首页哦~' },
+        { selector: '.avatar', text: '这是博主的头像哦~' },
+      ];
 
-	// 按顺序加载脚本
-	loadScript("/pio/static/l2d.js", "pio-l2d-script")
-		.then(() => loadScript("/pio/static/pio.js", "pio-main-script"))
-		.then(() => {
-			// 脚本加载完成后初始化
-			setTimeout(initPio, 100);
-		})
-		.catch((error) => {
-			console.error("Failed to load Pio scripts:", error);
-		});
-}
+      setTimeout(() => {
+        // 绑定 Hover 事件
+        hoverActions.forEach(({ selector, text }) => {
+          const elements = document.querySelectorAll(selector);
+          elements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+              if (oml2d && oml2d.tipsMessage) {
+                oml2d.tipsMessage(text, 3000, 3);
+              }
+            });
+          });
+        });
 
-// 样式已通过 Layout.astro 静态引入，无需页面切换监听
+        // 绑定点击事件 (触摸提示)
+        if (pioConfig.dialog?.touch && pioConfig.dialog.touch.length > 0) {
+          // 获取 canvas 元素
+          const canvas = oml2dContainer.querySelector('canvas');
+          if (canvas) {
+            canvas.addEventListener('click', (e) => {
+               // 阻止点击事件冒泡，避免立即重置闲置计时器（虽然重置也没关系，但逻辑上区分开更好）
+               e.stopPropagation(); 
+               resetIdleTimer(); // 点击也是一种交互，应该重置计时器
 
-onMount(() => {
-	if (!pioConfig.enable) return;
+               // 随机选择一条触摸提示
+               const randomMsg = pioConfig.dialog.touch[Math.floor(Math.random() * pioConfig.dialog.touch.length)];
+               if (oml2d && oml2d.tipsMessage) {
+                 oml2d.tipsMessage(randomMsg, 3000, 4); 
+               }
+            });
+            canvas.style.cursor = 'pointer';
+          }
+        }
+      }, 1000);
 
-	// 如果配置了手机端隐藏，且当前屏幕宽度小于 1280px (平板/手机)，则直接终止，不加载脚本
-    if (pioConfig.hiddenOnMobile && window.matchMedia("(max-width: 1280px)").matches) {
-        return;
+    } catch (e) {
+      console.error("oh-my-live2d initialization error:", e);
     }
+  });
 
-	// 加载资源并初始化
-	loadPioAssets();
-});
-
-onDestroy(() => {
-	// Svelte 组件销毁时不需要清理 Pio 实例
-	// 因为我们希望它在页面切换时保持状态
-	console.log("Pio Svelte component destroyed (keeping instance alive)");
-});
+  onDestroy(() => {
+    // 清理事件监听和定时器
+    if (typeof window !== 'undefined' && handleInteraction) {
+      window.removeEventListener('mousemove', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+    }
+    if (idleTimer) clearTimeout(idleTimer);
+  });
 </script>
 
-{#if pioConfig.enable}
-  <div class={`pio-container ${pioConfig.position || 'right'}`} bind:this={pioContainer}>
-    <div class="pio-action"></div>
-    <canvas 
-      id="pio" 
-      bind:this={pioCanvas}
-      width={pioConfig.width || 280} 
-      height={pioConfig.height || 250}
-    ></canvas>
-  </div>
-{/if}
-
-<style>
-  /* Pio 相关样式将通过外部CSS文件加载 */
-</style>
+<div bind:this={oml2dContainer} id="oml2d-container"></div>
