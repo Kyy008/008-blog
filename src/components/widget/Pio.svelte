@@ -24,7 +24,7 @@
             scale: 0.17,
             position: [-220, -120],
             stageStyle: {
-              height: 400,
+              height: 325,
               width: 250
             }
           }
