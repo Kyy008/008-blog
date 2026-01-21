@@ -21,16 +21,19 @@
         models: [
           {
             path: pioConfig.models[0],
-            scale: 0.15,
-            position: [-170, -110],
+            scale: 0.17,
+            position: [-220, -120],
             stageStyle: {
-              height: 250,
+              height: 400,
               width: 250
             }
           }
         ],
         dockedPosition: pioConfig.position || 'left',
         mobileDisplay: !pioConfig.hiddenOnMobile,
+        menus: {
+          disable: true
+        },
         tips: {
           welcomeTips: {
             duration: 4000,
