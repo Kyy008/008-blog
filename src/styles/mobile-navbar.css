@@ -1,6 +1,30 @@
 /**
  * 导航栏半透明样式
+ * Navbar Translucent Effects Styles
+ * 只有当页面启用banner时才应用半透明效果
  */
+
+/* 导航区域基础布局样式（避免 flex 子项溢出） */
+.navbar-nav-links {
+  min-width: 0;
+  flex-shrink: 1;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    visibility 0.3s,
+    gap 0.3s ease;
+}
+
+/* 按钮区域基础布局样式（避免 flex 子项溢出） */
+.navbar-buttons {
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+/* 顶栏标题样式：悬停时不变色 */
+.navbar-logo {
+  @apply text-black/75 dark:text-white/75 hover:!text-current;
+}
 
 #navbar > div {
   background: var(--card-bg);
@@ -258,5 +282,176 @@
     backdrop-filter: none;
     background: var(--card-bg);
     box-shadow: var(--shadow-sm);
+  }
+}
+
+/* 响应式优化 */
+
+/* 桌面端&平板端布局 */
+@media (min-width: 768px) {
+  /* 使用 Flex 布局实现精确的间距控制 */
+  #navbar > div {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Logo区域到导航选项的间距 */
+  #navbar > div > a:first-child {
+    margin-right: clamp(1rem, 2vw, 2rem);
+  }
+
+  #navbar .navbar-nav-links {
+    position: static;
+    left: unset;
+    transform: none;
+    gap: 0.2rem;
+    transition:
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      filter 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0.3s,
+      max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      gap 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* 导航选项到按钮的间距与Logo到导航选项相同 */
+    margin-right: clamp(1rem, 2vw, 2rem);
+    max-width: 100%;
+  }
+
+  /* 导航链接内部项的过渡 */
+  #navbar .navbar-nav-links > * {
+    transition:
+      opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #navbar .navbar-buttons {
+    gap: 0.2rem;
+    /* 按钮区域不添加右边距 */
+  }
+
+  /* 搜索状态下的避让逻辑以防重叠 - 所有桌面尺寸 */
+  #navbar.is-searching .navbar-nav-links {
+    opacity: 0;
+    transform: translateX(-2rem) scale(0.95);
+    filter: blur(4px);
+    pointer-events: none;
+    visibility: hidden;
+    max-width: 0;
+    overflow: hidden;
+    gap: 0;
+  }
+
+  /* 导航项依次淡出效果 */
+  #navbar.is-searching .navbar-nav-links > *:nth-child(1) {
+    transition-delay: 0ms;
+  }
+  #navbar.is-searching .navbar-nav-links > *:nth-child(2) {
+    transition-delay: 20ms;
+  }
+  #navbar.is-searching .navbar-nav-links > *:nth-child(3) {
+    transition-delay: 40ms;
+  }
+  #navbar.is-searching .navbar-nav-links > *:nth-child(4) {
+    transition-delay: 60ms;
+  }
+  #navbar.is-searching .navbar-nav-links > *:nth-child(5) {
+    transition-delay: 80ms;
+  }
+
+  #navbar.is-searching .navbar-nav-links > * {
+    opacity: 0;
+    transform: translateX(-1rem) scale(0.9);
+  }
+}
+
+/* 大屏桌面端优化 */
+@media (min-width: 1281px) {
+  #navbar .navbar-nav-links {
+    gap: 0.3rem;
+  }
+
+  #navbar .navbar-buttons {
+    gap: 0.3rem;
+  }
+}
+
+/* 非大屏桌面端&平板端优化 */
+@media (min-width: 768px) and (max-width: 1280px) {
+  #navbar .navbar-nav-links {
+    gap: 0.2rem;
+  }
+
+  #navbar .navbar-buttons {
+    gap: 0.2rem;
+  }
+}
+
+/* 手机端导航栏 */
+@media (max-width: 767px) {
+  #navbar > div {
+    max-width: none !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+/* 手机端导航栏 - 小屏 */
+@media (max-width: 511px) {
+  #navbar > div {
+    border-radius: 0.3rem !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  #navbar-buttons {
+    gap: 0.123rem !important;
+  }
+  /* Only size the trigger buttons; do not affect nested buttons inside panels */
+  #navbar-buttons button:not(.float-panel *) {
+    width: 2.4rem !important;
+    height: 2.4rem !important;
+    padding: 0 !important;
+  }
+
+  /* home button */
+  #navbar > div > a:first-child {
+    width: 7.2rem !important;
+    height: 2.4rem !important;
+    padding: 0 !important;
+  }
+}
+
+/* 手机端导航栏 - 更小屏 */
+@media (min-width: 333px) and (max-width: 443px) {
+  #navbar-buttons {
+    gap: 0.111rem !important;
+  }
+  /* Only size the trigger buttons; do not affect nested buttons inside panels */
+  #navbar-buttons button:not(.float-panel *) {
+    width: 2.1rem !important;
+    height: 2.1rem !important;
+    padding: 0 !important;
+  }
+
+  /* home button */
+  #navbar > div > a:first-child {
+    width: 6.3rem !important;
+    height: 2.1rem !important;
+    padding: 0 !important;
+  }
+}
+
+/* 手机端导航栏按钮 -超小屏 */
+@media (max-width: 332px) {
+  #navbar-buttons {
+    gap: 0 !important;
+    justify-content: flex-end !important;
+  }
+
+  /* Hide home button text (keep icon) */
+  #navbar > div > a:first-child > div {
+    font-size: 0 !important;
   }
 }

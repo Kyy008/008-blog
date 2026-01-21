@@ -321,26 +321,25 @@ if (siteConfig.font) {
 			(function() {
 				if (pageScaling && pageScaling.enable) {
 					function adjustPageScale() {
-						// 移动端/平板设备检测
-						const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 1024;
-						
-						// 如果是移动端或平板，重置缩放并返回
-						if (isMobileOrTablet) {
-							document.documentElement.style.fontSize = '';
+						const isTouch =
+							(window.matchMedia &&
+								(window.matchMedia("(pointer:coarse)").matches ||
+									window.matchMedia("(hover: none)").matches)) ||
+							("ontouchstart" in window);
+						const isPortrait =
+							window.matchMedia &&
+							window.matchMedia("(orientation: portrait)").matches;
+						const isTabletLike = isTouch || window.innerWidth <= 1280;
+						if (isTabletLike || isPortrait) {
+							document.documentElement.style.fontSize = "";
 							return;
 						}
-
 						const targetWidth = pageScaling.targetWidth || 2000;
-						const currentWidth = window.innerWidth;
-
-						if (currentWidth < targetWidth) {
-							// 使用 font-size 缩放，基准是 16px (100%)
-							const scale = currentWidth / targetWidth;
-							// 设置为百分比，100% = 16px
-							document.documentElement.style.fontSize = `${scale * 100}%`;
-						} else {
-							document.documentElement.style.fontSize = '';
-						}
+						const currentWidth = document.documentElement.clientWidth;
+						let scale = currentWidth / targetWidth;
+						if (scale > 1) scale = 1;
+						if (scale < 0.85) scale = 0.85;
+						document.documentElement.style.fontSize = `${scale * 100}%`;
 					}
 
 					// 立即执行一次
@@ -351,6 +350,7 @@ if (siteConfig.font) {
 					
 					// Swup 页面切换后也需要检查
 					document.addEventListener('swup:page:view', adjustPageScale);
+					window.addEventListener('orientationchange', adjustPageScale);
 				}
 			})();
 		</script>
