@@ -18,22 +18,17 @@
 	function initFriendsPage() {
 		console.log("[Friends Global] initFriendsPage called");
 
-		var searchInput = document.getElementById("friend-search");
-		var friendsGrid = document.getElementById("friends-grid");
-		var noResults = document.getElementById("no-results");
-
-		// 如果关键元素不存在，直接返回
-		if (!searchInput || !friendsGrid || !noResults) {
-			return false;
+		var copyButtons = document.querySelectorAll(".copy-link-btn");
+        
+        // 如果没有复制按钮，可能页面还没加载完或者没有友链
+		if (copyButtons.length === 0) {
+            // 检查是否在友链页面
+            if (!document.getElementById("friends-grid")) {
+			    return false;
+            }
 		}
 
-		var tagFilters = document.querySelectorAll(".filter-tag");
-		var friendCards = document.querySelectorAll(".friend-card");
-		var copyButtons = document.querySelectorAll(".copy-link-btn");
-
 		console.log("[Friends Global] Found elements:", {
-			cards: friendCards.length,
-			filters: tagFilters.length,
 			copyButtons: copyButtons.length,
 		});
 
@@ -63,77 +58,6 @@
 				}
 			}
 			window.friendsPageState.eventListeners = [];
-		}
-
-		var currentTag = "all";
-		var searchTerm = "";
-
-		// 过滤函数
-		function filterFriends() {
-			var visibleCount = 0;
-			for (var i = 0; i < friendCards.length; i++) {
-				var card = friendCards[i];
-				var title = (card.getAttribute("data-title") || "").toLowerCase();
-				var desc = (card.getAttribute("data-desc") || "").toLowerCase();
-				var tags = card.getAttribute("data-tags") || "";
-
-				var matchesSearch =
-					!searchTerm ||
-					title.indexOf(searchTerm) >= 0 ||
-					desc.indexOf(searchTerm) >= 0;
-				var matchesTag =
-					currentTag === "all" || tags.split(",").indexOf(currentTag) >= 0;
-
-				if (matchesSearch && matchesTag) {
-					card.style.display = "";
-					visibleCount++;
-				} else {
-					card.style.display = "none";
-				}
-			}
-
-			if (visibleCount === 0) {
-				noResults.classList.remove("hidden");
-				friendsGrid.classList.add("hidden");
-			} else {
-				noResults.classList.add("hidden");
-				friendsGrid.classList.remove("hidden");
-			}
-		}
-
-		// 搜索功能
-		var searchHandler = (e) => {
-			searchTerm = e.target.value.toLowerCase();
-			filterFriends();
-		};
-		searchInput.addEventListener("input", searchHandler);
-		window.friendsPageState.eventListeners.push([
-			searchInput,
-			"input",
-			searchHandler,
-		]);
-
-		// 标签筛选
-		for (var i = 0; i < tagFilters.length; i++) {
-			((button) => {
-				var clickHandler = () => {
-					// 更新选中状态
-					for (var j = 0; j < tagFilters.length; j++) {
-						var btn = tagFilters[j];
-						btn.classList.remove("active");
-					}
-					button.classList.add("active");
-
-					currentTag = button.getAttribute("data-tag") || "all";
-					filterFriends();
-				};
-				button.addEventListener("click", clickHandler);
-				window.friendsPageState.eventListeners.push([
-					button,
-					"click",
-					clickHandler,
-				]);
-			})(tagFilters[i]);
 		}
 
 		// 复制链接功能
@@ -212,7 +136,6 @@
 							if (node.nodeType === 1) {
 								if (
 									node.id === "friends-grid" ||
-									node.id === "friend-search" ||
 									(node.querySelector && node.querySelector("#friends-grid"))
 								) {
 									shouldInit = true;

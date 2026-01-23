@@ -23,7 +23,7 @@ const SITE_LANG = "zh_CN"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。
 const SITE_TIMEZONE = 8; //设置你的网站时区 from -12 to 12 default in UTC+8
 export const siteConfig: SiteConfig = {
 	title: "Kyy008",
-	subtitle: "One demo website",
+	subtitle: "Kyy008 的个人 Blog",
 	siteURL: "https://mizuki.mysqil.com/", // 请替换为你的站点URL，以斜杠结尾
 	siteStartDate: "2026-01-21", // 站点开始运行日期，用于站点统计组件计算运行天数
 
@@ -124,7 +124,7 @@ export const siteConfig: SiteConfig = {
 		position: "center", // 等同于 object-position，仅支持 'top', 'center', 'bottom'。默认为 'center'
 
 		carousel: {
-			enable: true, // 为 true 时：为多张图片启用轮播。为 false 时：从数组中随机显示一张图片
+			enable: false, // 为 true 时：为多张图片启用轮播。为 false 时：从数组中随机显示一张图片
 			interval: 1.5, // 轮播间隔时间（秒）
 		},
 
@@ -234,7 +234,7 @@ export const fullscreenWallpaperConfig: FullscreenWallpaperConfig = {
 	}, // 使用本地横幅图片
 	position: "center", // 壁纸位置，等同于 object-position
 	carousel: {
-		enable: true, // 启用轮播
+		enable: false, // 启用轮播
 		interval: 5, // 轮播间隔时间（秒）
 	},
 	zIndex: -1, // 层级，确保壁纸在背景层
@@ -247,31 +247,6 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Home,
 		LinkPreset.Archive,
 		// 支持自定义导航栏链接，支持多级菜单
-		{
-			name: "Links",
-			url: "/links/",
-			icon: "material-symbols:link",
-			children: [
-				{
-					name: "GitHub",
-					url: "https://github.com/Kyy008/008-blog",
-					external: true,
-					icon: "fa6-brands:github",
-				},
-				{
-					name: "Bilibili",
-					url: "https://space.bilibili.com/51866163",
-					external: true,
-					icon: "fa6-brands:bilibili",
-				},
-				{
-					name: "Gitee",
-					url: "https://gitee.com/matsuzakayuki/Mizuki",
-					external: true,
-					icon: "mdi:git",
-				},
-			],
-		},
 		{
 			name: "My",
 			url: "/content/",
@@ -370,11 +345,6 @@ export const profileConfig: ProfileConfig = {
 			name: "Codeforces",
 			icon: "simple-icons:codeforces",
 			url: "https://codeforces.com/profile/Kyy008",
-		},
-		{
-			name: "Discord",
-			icon: "fa6-brands:discord",
-			url: "https://discord.gg/MqW6TcQtVM",
 		},
 	],
 };

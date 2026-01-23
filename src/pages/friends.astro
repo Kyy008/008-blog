@@ -21,9 +21,6 @@ if (!friendsPost) {
 
 const { Content } = await render(friendsPost);
 const friendsList = getShuffledFriendsList();
-
-// 获取所有标签
-const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 ---
 
 <MainGridLayout title={i18n(I18nKey.friends)} description={i18n(I18nKey.friends)}>
@@ -49,58 +46,15 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
         </p>
 			</div>
 
-			<!-- 搜索和筛选栏 -->
-			<div class="mb-6 space-y-3">
-				<!-- 搜索框 -->
-				<div class="w-full">
-					<div class="relative">
-						<input 
-							type="text" 
-							id="friend-search"
-							placeholder={i18n(I18nKey.friendsSearchPlaceholder)}
-							class="w-full px-4 py-2 pl-10 rounded-lg bg-[var(--btn-regular-bg)] 
-									text-black/90 dark:text-white/90
-									border border-black/10 dark:border-white/10
-									focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50
-									transition-all duration-200"
-						/>
-						<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black/40 dark:text-white/40" 
-							 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-						</svg>
-					</div>
-				</div>
 
-				<!-- 标签筛选 -->
-				<div class="filter-container flex flex-wrap gap-2">
-					<button 
-						class="filter-tag active"
-						data-tag="all"
-					>
-						{i18n(I18nKey.friendsFilterAll)}
-					</button>
-					{allTags.map(tag => (
-						<button 
-							class="filter-tag"
-							data-tag={tag}
-						>
-							{tag}
-						</button>
-					))}
-				</div>
-			</div>
 
 			<!-- 友链卡片网格 -->
-			<div id="friends-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
+			<div id="friends-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
 				{friendsList.map((item) => (
 					<div 
 						class="friend-card group relative bg-transparent rounded-xl border border-black/10 dark:border-white/10
 								 overflow-hidden transition-all duration-300
 								 hover:shadow-xl hover:-translate-y-1"
-						data-title={item.title.toLowerCase()}
-						data-desc={item.desc.toLowerCase()}
-						data-tags={item.tags.join(',')}
 					>
 						<!-- 卡片内容 -->
 						<div class="p-6">
@@ -142,16 +96,7 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 								{item.desc}
 							</p>
 
-							<!-- 标签 -->
-							<div class="flex flex-wrap gap-2 mb-4">
-								{item.tags.map(tag => (
-									<span class="px-2 py-1 text-xs rounded-md 
-													bg-[var(--primary)]/10 text-[var(--primary)] 
-													font-medium">
-										{tag}
-									</span>
-								))}
-							</div>
+
 
 							<!-- 操作按钮 -->
 							<div class="flex gap-2">
@@ -196,14 +141,7 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 				))}
 			</div>
 
-			<!-- 无结果提示 -->
-			<div id="no-results" class="hidden text-center py-12">
-				<svg class="w-16 h-16 mx-auto mb-4 text-black/20 dark:text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-						d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-				</svg>
-				<p class="text-black/50 dark:text-white/50 text-lg">{i18n(I18nKey.friendsNoResults)}</p>
-			</div>
+
 
 			<!-- 说明文档 -->
 			<Markdown class="mt-8 prose dark:prose-invert max-w-none">
@@ -244,47 +182,5 @@ const allTags = Array.from(new Set(friendsList.flatMap((item) => item.tags)));
 		}
 	}
 
-	/* 搜索框焦点效果 */
-	#friend-search:focus {
-		box-shadow: 0 0 0 3px var(--primary) / 0.1;
-	}
-	
-	/* 标签筛选按钮样式 - 与番剧页面一致 */
-	.filter-container {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-	
-	.filter-tag {
-		padding: 0.5rem 1rem;
-		border: 1px solid var(--line-divider);
-		border-radius: var(--radius-large);
-		background: var(--btn-regular-bg);
-		color: var(--btn-content);
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		white-space: nowrap;
-	}
-	
-	.filter-tag:hover:not(.active) {
-		background: var(--btn-hover-bg);
-		border-color: var(--primary);
-		transform: translateY(-1px);
-	}
-	
-	.filter-tag.active {
-		background: var(--primary);
-		color: white;
-		border-color: var(--primary);
-	}
-	
-	.filter-tag.active:hover {
-		background: var(--primary) !important;
-		color: white !important;
-		border-color: var(--primary) !important;
-		transform: translateY(-1px);
-	}
+
 </style>
