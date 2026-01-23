@@ -10,13 +10,13 @@ import type { SearchResult } from "@/global";
 let keywordDesktop = $state("");
 let keywordMobile = $state("");
 let result: SearchResult[] = $state([]);
-let isSearching = $state(false);
 let pagefindLoaded = false;
 let initialized = $state(false);
 let isDesktopSearchExpanded = $state(false);
 let debounceTimer: NodeJS.Timeout;
 let windowJustFocused = false;
 let focusTimer: NodeJS.Timeout;
+let blurTimer: NodeJS.Timeout;
 
 const fakeResult: SearchResult[] = [
 	{
@@ -63,7 +63,7 @@ const collapseDesktopSearch = () => {
 
 const handleBlur = () => {
 	// 延迟处理以允许搜索结果的点击事件先于折叠逻辑执行
-	setTimeout(() => {
+	blurTimer = setTimeout(() => {
 		isDesktopSearchExpanded = false;
 		// 仅隐藏面板并折叠，保留搜索关键词和结果以便下次展开时查看
 		setPanelVisibility(false, true);
@@ -106,7 +106,6 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 	if (!initialized) {
 		return;
 	}
-	isSearching = true;
 	try {
 		let searchResults: SearchResult[] = [];
 		if (import.meta.env.PROD && pagefindLoaded && window.pagefind) {
@@ -126,8 +125,6 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 		console.error("Search error:", error);
 		result = [];
 		setPanelVisibility(false, isDesktop);
-	} finally {
-		isSearching = false;
 	}
 };
 
@@ -230,10 +227,18 @@ onDestroy(() => {
     aria-label="Search"
     onmouseenter={() => {if (!isDesktopSearchExpanded) toggleDesktopSearch()}}
     onmouseleave={collapseDesktopSearch}
+    onclick={() => {
+        const input = document.getElementById("search-input-desktop") as HTMLInputElement;
+        input?.focus();
+    }}
 >
     <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none {isDesktopSearchExpanded ? 'left-3' : 'left-1/2 -translate-x-1/2'} transition top-1/2 -translate-y-1/2 {isDesktopSearchExpanded ? 'text-black/30 dark:text-white/30' : ''}"></Icon>
     <input id="search-input-desktop" placeholder={i18n(I18nKey.search)} bind:value={keywordDesktop}
-        onfocus={() => {if (!isDesktopSearchExpanded) toggleDesktopSearch(); search(keywordDesktop, true)}}
+        onfocus={() => {
+            clearTimeout(blurTimer);
+            if (!isDesktopSearchExpanded) toggleDesktopSearch(); 
+            search(keywordDesktop, true);
+        }}
         onblur={handleBlur}
         class="transition-all pl-10 text-sm bg-transparent outline-0
             h-full {isDesktopSearchExpanded ? 'w-36' : 'w-0'} text-black/50 dark:text-white/50"
@@ -247,14 +252,14 @@ onDestroy(() => {
 </button>
 
 <!-- search panel -->
-<div id="search-panel" class="float-panel float-panel-closed absolute md:w-[30rem] top-20 left-4 md:left-[unset] right-4 z-50 search-panel">
+<div id="search-panel" class="float-panel float-panel-closed absolute md:w-[30rem] top-20 left-4 md:left-[unset] right-4 z-50 search-panel shadow-2xl rounded-2xl p-2">
     <!-- search bar inside panel for phone/tablet -->
     <div id="search-bar-inside" class="flex relative lg:hidden transition-all items-center h-11 rounded-xl
       bg-black/[0.04] hover:bg-black/[0.06] focus-within:bg-black/[0.06]
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
   ">
         <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-        <input placeholder="Search" bind:value={keywordMobile}
+        <input placeholder={i18n(I18nKey.search)} bind:value={keywordMobile}
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
                focus:w-60 text-black/50 dark:text-white/50"
         >
