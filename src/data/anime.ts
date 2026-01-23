@@ -1,102 +1,62 @@
 // 本地番剧数据配置
 export type AnimeItem = {
 	title: string;
-	status: "watching" | "completed" | "planned";
-	rating: number;
 	cover: string;
 	description: string;
-	episodes: string;
 	year: string;
-	genre: string[];
-	studio: string;
 	link: string;
-	progress: number;
-	totalEpisodes: number;
-	startDate: string;
-	endDate: string;
 };
 
 const localAnimeList: AnimeItem[] = [
-	{
-		title: "Lycoris Recoil",
-		status: "completed",
-		rating: 9.8,
-		cover: "/assets/anime/lkls.webp",
-		description: "Girl's gunfight",
-		episodes: "12 episodes",
-		year: "2022",
-		genre: ["Action", "Slice of life"],
-		studio: "A-1 Pictures",
-		link: "https://www.bilibili.com/bangumi/media/md28338623",
-		progress: 12,
-		totalEpisodes: 12,
-		startDate: "2022-07",
-		endDate: "2022-09",
+	{	
+		title: "魔法少女小圆",
+		cover: "/assets/anime/xiaoyuan.webp",
+		description: "可爱的画风下，叙述着黑暗的故事。拥有别具一格的艺术表达、充满哲思的蕴藏内涵",
+		year: "2011",
+		link: "https://www.bilibili.com/bangumi/media/md2539",
 	},
 	{
-		title: "Yowamushi Pedal",
-		status: "watching",
-		rating: 9.5,
-		cover: "/assets/anime/rynh.webp",
-		description: "Girl's daily life, sweet and healing",
-		episodes: "12 episodes",
-		year: "2015",
-		genre: ["Daily life", "Healing"],
-		studio: "Nexus",
-		link: "https://www.bilibili.com/bangumi/media/md2590",
-		progress: 8,
-		totalEpisodes: 12,
-		startDate: "2015-07",
-		endDate: "2015-09",
+		title: "少女终末旅行",
+		cover: "/assets/anime/zhongmo.webp",
+		description: "",
+		year: "2017",
+		link: "https://www.bilibili.com/bangumi/media/md6463",
 	},
 	{
-		title: "Asteroid in Love",
-		status: "watching",
-		rating: 9.2,
-		cover: "/assets/anime/laxxx.webp",
-		description: "Meeting girls among the stars, pure love and healing",
-		episodes: "12 episodes",
-		year: "2020",
-		genre: ["Romance", "Healing"],
-		studio: "Doga Kobo",
-		link: "https://www.bilibili.com/bangumi/media/md28224128",
-		progress: 5,
-		totalEpisodes: 12,
-		startDate: "2020-01",
-		endDate: "2020-03",
+		title: "进击的巨人",
+		cover: "/assets/anime/juren.webp",
+		description: "剧情、热血向，自由与桎梏的对抗",
+		year: "2013",
+		link: "https://www.dmla4.com/video/3702.html",
 	},
 	{
-		title: "Is the Order a Rabbit?",
-		status: "planned",
-		rating: 9.0,
-		cover: "/assets/anime/tz1.webp",
-		description: "A group of girls' warm daily life",
-		episodes: "12 episodes",
+		title: "请问您今天要来点兔子吗？",
+		cover: "/assets/anime/diantu.webp",
+		description: "Kyy008的单推角色【香风智乃】的出处作品。仅凭萌系与日常的剧情足以治愈心灵",
 		year: "2014",
-		genre: ["Daily life", "Healing"],
-		studio: "White Fox",
 		link: "https://www.bilibili.com/bangumi/media/md2762",
-		progress: 12,
-		totalEpisodes: 12,
-		startDate: "2014-04",
-		endDate: "2014-06",
 	},
 	{
-		title: "The Secret of the Magic Girl",
-		status: "watching",
-		rating: 9.0,
-		cover: "/assets/anime/cmmn.webp",
-		description: "Muli, Muli!",
-		episodes: "12 episodes",
-		year: "2024",
-		genre: ["Daily life", "Healing", "Magic"],
-		studio: "C2C",
-		link: "https://www.bilibili.com/bangumi/media/md26625039",
-		progress: 8,
-		totalEpisodes: 12,
-		startDate: "2025-07",
-		endDate: "2025-10",
+		title: "Re：从零开始的异世界生活",
+		cover: "/assets/anime/re0.webp",
+		description: "",
+		year: "2020",
+		link: "https://www.bilibili.com/bangumi/media/md28224394",
 	},
+	{
+		title: "百变小樱",
+		cover: "/assets/anime/ying.webp",
+		description: "",
+		year: "1998",
+		link: "https://www.bilibili.com/bangumi/media/md3756",
+	},
+	{
+		title: "某科学的超电磁炮",
+		cover: "/assets/anime/pao.webp",
+		description: "观看于2018年，是Kyy008的二次元入坑作，bilibili的站名起源",
+		year: "2009",
+		link: "https://www.bilibili.com/bangumi/media/md425",
+	}
 ];
 
 export default localAnimeList;

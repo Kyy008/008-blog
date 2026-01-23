@@ -37,7 +37,7 @@
         tips: {
           welcomeTips: {
             duration: 4000,
-            priority: 3,
+            priority: 10,
             message: {
               daybreak: '早上好！今天也要加油哦！',
               morning: '上午好！工作学习顺利吗？',
@@ -45,7 +45,8 @@
               afternoon: '下午好！打起精神来，继续努力吧！',
               dusk: '傍晚了，窗外的夕阳很美呢。',
               night: '晚上好，今天过得怎么样？',
-              lateNight: '已经很晚了，早点休息哦'
+              lateNight: '已经很晚了，早点休息哦',
+              weeHours: 'Chino也好困困呢'
             }
           },
           // 禁用原生 idleTips，改为手动实现

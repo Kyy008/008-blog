@@ -3,7 +3,7 @@ title: Mizuki 使用指南
 published: 2026-01-23
 description: "本博客模版的综合使用指南。"
 image: "./cover.webp"
-tags: ["Mizuki", "Blogging", "Customization", "Guide"]
+tags: ["Guide"]
 category: Guide
 draft: true
 ---
