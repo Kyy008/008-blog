@@ -76,8 +76,8 @@ export function getCategoryUrl(category: string | null): string {
 		category.trim().toLowerCase() ===
 			i18n(I18nKey.uncategorized).toLowerCase()
 	)
-		return url("/archive/?uncategorized=true");
-	return url(`/archive/?category=${encodeURIComponent(category.trim())}`);
+		return url(`/archive/${i18n(I18nKey.uncategorized)}/`);
+	return url(`/archive/${category.trim()}/`);
 }
 
 export function getDir(path: string): string {

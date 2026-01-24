@@ -1,0 +1,76 @@
+---
+import { Icon } from "astro-icon/components";
+import { i18n } from "@i18n/translation";
+import I18nKey from "@i18n/i18nKey";
+
+interface Props {
+    name: string;
+    count: number;
+    url: string;
+    style?: string;
+    class?: string;
+}
+
+const { name, count, url, style } = Astro.props;
+const className = Astro.props.class;
+---
+
+<div
+    class:list={[
+        "card-base flex flex-col-reverse md:flex-col w-full rounded-[var(--radius-large)] overflow-hidden relative",
+        className,
+    ]}
+    style={style}
+>
+    <div
+        class:list={[
+            "pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 relative w-full md:w-[calc(100%_-_3.25rem_-_0.75rem)]",
+        ]}
+    >
+        <a
+            href={url}
+            class="transition group w-full block font-bold mb-3 text-3xl text-90
+        hover:text-[var(--primary)] dark:hover:text-[var(--primary)]
+        active:text-[var(--title-active)] dark:active:text-[var(--title-active)]
+        before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
+        before:absolute
+        before:top-[2.1875rem] before:left-[1.125rem] before:hidden md:before:block"
+        >
+            {name}
+            <Icon
+                class="inline text-[2rem] text-[var(--primary)] md:hidden translate-y-0.5 absolute"
+                name="material-symbols:chevron-right-rounded"
+            />
+            <Icon
+                class="text-[var(--primary)] text-[2rem] transition hidden md:inline absolute translate-y-0.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0"
+                name="material-symbols:chevron-right-rounded"
+            />
+        </a>
+
+        <div class="flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2 mb-4">
+            <!-- Post Count with Article Icon -->
+            <div class="flex items-center">
+                <div class="meta-icon">
+                    <Icon name="material-symbols:article-outline-rounded" class="text-xl"></Icon>
+                </div>
+                <span class="text-50 text-sm font-medium">
+                    {count} {i18n(count === 1 ? I18nKey.postCount : I18nKey.postsCount)}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <a
+        href={url}
+        aria-label={name}
+        class="!hidden md:!flex btn-regular w-[3.25rem]
+         absolute right-3 top-3 bottom-3 rounded-xl bg-[var(--enter-btn-bg)]
+         hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95
+        "
+    >
+        <Icon
+            name="material-symbols:chevron-right-rounded"
+            class="transition text-[var(--primary)] text-4xl mx-auto"
+        />
+    </a>
+</div>

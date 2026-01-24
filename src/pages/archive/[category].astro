@@ -1,0 +1,39 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import PostCard from "@components/PostCard.astro";
+import { getSortedPosts, getCategoryList } from "@utils/content-utils";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+
+export async function getStaticPaths() {
+    const categories = await getCategoryList();
+    return categories.map((cat) => ({
+        params: { category: cat.name },
+        props: { categoryName: cat.name },
+    }));
+}
+
+const { categoryName } = Astro.props;
+const posts = await getSortedPosts();
+
+const categoryPosts = posts.filter(p => {
+    // If categoryName is the "Uncategorized" label, match posts with no category
+    if (categoryName === i18n(I18nKey.uncategorized)) {
+        return !p.data.category;
+    }
+    // Otherwise match exact category name
+    return p.data.category === categoryName;
+});
+---
+
+<MainGridLayout title={categoryName} description={i18n(I18nKey.archive)}>
+    <div class="flex flex-col gap-4 mb-4">
+        {categoryPosts.map((entry, index) => (
+            <PostCard
+                entry={entry}
+                class="onload-animation"
+                style={`animation-delay: calc(var(--content-delay) + ${index * 50}ms)`}
+            />
+        ))}
+    </div>
+</MainGridLayout>
