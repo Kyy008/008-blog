@@ -46,7 +46,13 @@ export const friendsData: FriendItem[] = [
 		desc: "同校的直博同学，致力于网安与 LLM 研究。不折不扣的数码爱好者与东方 Project 厨",
 		siteurl: "https://github.com/FinnClair-Su",
 	},
-	
+	{
+		id: 6,
+		title: "NAPHthalene130",
+		imgurl: "/assets/friend-avatar/naph.webp",
+		desc: "24级软件学院的同学。一同参加过算法竞赛训练，乐于助人",
+		siteurl: "https://github.com/NAPHthalene130",
+	},
 ];
 
 // 获取所有友情链接数据
