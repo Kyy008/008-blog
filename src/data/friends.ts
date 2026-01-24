@@ -15,7 +15,7 @@ export const friendsData: FriendItem[] = [
 		id: 1,
 		title: "FYTJ",
 		imgurl: "/assets/friend-avatar/zyb.webp",
-		desc: "相识超过3000天的同伴。现于中国科学院大学就读计算机专业，致力于芯片开发",
+		desc: "相识超过 3000 天的同伴。现于中国科学院大学就读计算机专业，致力于芯片开发",
 		siteurl: "https://github.com/FYTJ",
 	},
 	{
@@ -29,15 +29,22 @@ export const friendsData: FriendItem[] = [
 		id: 3,
 		title: "上条当咩",
 		imgurl: "/assets/friend-avatar/kmj.webp",
-		desc: "计算机专业享受者。乐于分享知识于见闻，诠释着CS学生应有的姿态",
+		desc: "计算机专业享受者。乐于分享知识与见闻，诠释着 CS 学生应有的姿态",
 		siteurl: "https://love.nimisora.icu",
 	},
 	{
 		id: 4,
 		title: "Hewkick",
 		imgurl: "/assets/friend-avatar/hewkick.webp",
-		desc: "同校的AI专业好友。具备绩点与科研能力的同时，也是音乐、音游爱好者",
+		desc: "同校的 AI 专业好友。具备绩点与科研能力的同时，也是音乐、音游爱好者",
 		siteurl: "https://github.com/hewkick",
+	},
+	{
+		id: 5,
+		title: "FinnClair-Su",
+		imgurl: "/assets/friend-avatar/sxx.webp",
+		desc: "同校的直博同学，致力于网安与 LLM 研究。不折不扣的数码爱好者与东方 Project 厨",
+		siteurl: "https://github.com/FinnClair-Su",
 	},
 	
 ];
