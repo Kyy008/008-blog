@@ -292,6 +292,18 @@ export const navBarConfig: NavBarConfig = {
 				},
 			],
 		},
+		{
+			name: "Others",
+			url: "#",
+			icon: "material-symbols:more-horiz",
+			children: [
+				{
+					name: "Timeline",
+					url: "/timeline/",
+					icon: "material-symbols:timeline",
+				},
+			],
+		},
 
 	],
 };
