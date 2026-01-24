@@ -10,7 +10,9 @@ draft: false
 
 在一切开始之前，不妨说说这个站点本身。
 
-# 技术栈与模板
+# 技术栈
+
+## 模板
 
 基于现代化的静态网站生成器 [Astro](https://astro.build/) 构建，使用了 [Tailwind CSS](https://tailwindcss.com/) 进行样式设计。
 
@@ -20,7 +22,7 @@ draft: false
 
 ::github{repo="matsuzaka-yuki/Mizuki"}
 
-本站的源码仓库：
+本站的源码仓库，本站由该仓库配置的 CI/CD 流程自动化部署而来：
 
 ::github{repo="Kyy008/008-blog"}
 
@@ -31,9 +33,9 @@ draft: false
 
 <iframe width="100%" height="468" src="//player.bilibili.com/player.html?bvid=BV14h4y1s7dz&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
-## 技术支持
+## Live2D 技术
 
-我们需要一个应用于浏览器环境且开箱即用的 Live2D 组件依赖技术。由于原 Mizuki 模板自带的 [Pio](https://github.com/Dreamer-Paul/Pio) 看板娘插件仅支持 Cubism 2 模型，而本站使用的香风智乃模型基于 Cubism 3 制作，导致原插件不兼容。因此，本站改用了可以同时兼容 Cubism 2 至 Cubism 5 的 `oh-my-live2d` 库进行替代。
+我们需要一个应用于浏览器环境的 Live2D 组件依赖技术。由于原 Mizuki 模板自带的 [Pio](https://github.com/Dreamer-Paul/Pio) 看板娘插件仅支持 Cubism 2 模型，而本站使用的香风智乃模型基于 Cubism 3 制作，导致原插件不兼容。因此，本站改用了可以同时兼容 Cubism 2 至 Cubism 5 的 `oh-my-live2d` 库进行替代。
 
 模型仓库参考：
 
