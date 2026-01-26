@@ -8,7 +8,8 @@ type PanelId =
 	| "display-setting"
 	| "nav-menu-panel"
 	| "search-panel"
-	| "wallpaper-mode-panel";
+	| "wallpaper-mode-panel"
+	| "music-player-panel";
 
 class PanelManager {
 	private activePanels: Set<PanelId> = new Set();

@@ -10,23 +10,19 @@ import { i18n } from "../../i18n/translation";
 
 // 音乐播放器模式，可选 "local" 或 "meting"，从本地配置中获取或使用默认值 "meting"
 let mode = musicPlayerConfig.mode ?? "meting";
-// Meting API 地址，从配置中获取或使用默认地址(bilibili.uno(由哔哩哔哩松坂有希公益管理)),服务器在海外,部分音乐平台可能不支持并且速度可能慢,也可以自建Meting API
+// Meting API 地址
 let meting_api =
 	musicPlayerConfig.meting_api ??
 	"https://www.bilibili.uno/api?server=:server&type=:type&id=:id&auth=:auth&r=:r";
-// Meting API 的 ID，从配置中获取或使用默认值
+// Meting API 的 ID
 let meting_id = musicPlayerConfig.id ?? "14164869977";
-// Meting API 的服务器，从配置中获取或使用默认值,有的meting的api源支持更多平台,一般来说,netease=网易云音乐, tencent=QQ音乐, kugou=酷狗音乐, xiami=虾米音乐, baidu=百度音乐
+// Meting API 的服务器
 let meting_server = musicPlayerConfig.server ?? "netease";
-// Meting API 的类型，从配置中获取或使用默认值
+// Meting API 的类型
 let meting_type = musicPlayerConfig.type ?? "playlist";
 
 // 播放状态，默认为 false (未播放)
 let isPlaying = false;
-// 播放器是否展开，默认为 false
-let isExpanded = false;
-// 播放器是否隐藏，默认为 false
-let isHidden = false;
 // 是否显示播放列表，默认为 false
 let showPlaylist = false;
 // 当前播放时间，默认为 0
@@ -114,7 +110,7 @@ async function fetchMetingPlaylist() {
 		const list = await res.json();
 		playlist = list.map((song: any) => {
 			let title = song.name ?? song.title ?? i18n(Key.unknownSong);
-		let artist = song.artist ?? song.author ?? i18n(Key.unknownArtist);
+			let artist = song.artist ?? song.author ?? i18n(Key.unknownArtist);
 			let dur = song.duration ?? 0;
 			if (dur > 10000) dur = Math.floor(dur / 1000);
 			if (!Number.isFinite(dur) || dur <= 0) dur = 0;
@@ -143,22 +139,6 @@ function togglePlay() {
 		audio.pause();
 	} else {
 		audio.play().catch(() => {});
-	}
-}
-
-function toggleExpanded() {
-	isExpanded = !isExpanded;
-	if (isExpanded) {
-		showPlaylist = false;
-		isHidden = false;
-	}
-}
-
-function toggleHidden() {
-	isHidden = !isHidden;
-	if (isHidden) {
-		isExpanded = false;
-		showPlaylist = false;
 	}
 }
 
@@ -442,257 +422,151 @@ onDestroy(() => {
 </div>
 {/if}
 
-<div class="music-player fixed bottom-4 right-4 z-50 transition-all duration-300 ease-in-out"
-     class:expanded={isExpanded}
-     class:hidden-mode={isHidden}>
-
-    <!-- 隐藏状态的小圆球 -->
-    <div class="orb-player w-12 h-12 bg-[var(--primary)] rounded-full shadow-lg cursor-pointer transition-all duration-500 ease-in-out flex items-center justify-center hover:scale-110 active:scale-95"
-         class:opacity-0={!isHidden}
-         class:scale-0={!isHidden}
-         class:pointer-events-none={!isHidden}
-         on:click={toggleHidden}
-         on:keydown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-				toggleHidden();
-            }
-         }}
-         role="button"
-         tabindex="0"
-         aria-label={i18n(Key.musicPlayerShow)}>
-        {#if isLoading}
-            <Icon icon="eos-icons:loading" class="text-white text-lg" />
-        {:else if isPlaying}
-            <div class="flex space-x-0.5">
-                <div class="w-0.5 h-3 bg-white rounded-full animate-pulse"></div>
-                <div class="w-0.5 h-4 bg-white rounded-full animate-pulse" style="animation-delay: 150ms;"></div>
-                <div class="w-0.5 h-2 bg-white rounded-full animate-pulse" style="animation-delay: 300ms;"></div>
-            </div>
-        {:else}
-            <Icon icon="material-symbols:music-note" class="text-white text-lg" />
-        {/if}
-    </div>
-    <!-- 收缩状态的迷你播放器（封面圆形） -->
-    <div class="mini-player card-base bg-[var(--float-panel-bg)] shadow-xl rounded-2xl p-3 transition-all duration-500 ease-in-out"
-         class:opacity-0={isExpanded || isHidden}
-         class:scale-95={isExpanded || isHidden}
-         class:pointer-events-none={isExpanded || isHidden}>
-        <div class="flex items-center gap-3">
-            <!-- 封面区域：点击控制播放/暂停 -->
-            <div class="cover-container relative w-12 h-12 rounded-full overflow-hidden cursor-pointer"
-                 on:click={togglePlay}
-                 on:keydown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-						togglePlay();
-                    }
-                 }}
-                 role="button"
-                 tabindex="0"
-                 aria-label={isPlaying ? i18n(Key.musicPlayerPause) : i18n(Key.musicPlayerPlay)}>
-                <img src={getAssetPath(currentSong.cover)} alt={i18n(Key.musicPlayerCover)}
-                     class="w-full h-full object-cover transition-transform duration-300"
-                     class:spinning={isPlaying && !isLoading}
-                     class:animate-pulse={isLoading} />
-                <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    {#if isLoading}
-                        <Icon icon="eos-icons:loading" class="text-white text-xl" />
-                    {:else if isPlaying}
-                        <Icon icon="material-symbols:pause" class="text-white text-xl" />
-                    {:else}
-                        <Icon icon="material-symbols:play-arrow" class="text-white text-xl" />
-                    {/if}
-                </div>
-            </div>
-            <!-- 歌曲信息区域：点击展开播放器 -->
-            <div class="flex-1 min-w-0 cursor-pointer"
-                 on:click={toggleExpanded}
-                 on:keydown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-						toggleExpanded();
-                    }
-                 }}
-                 role="button"
-                 tabindex="0"
-                 aria-label={i18n(Key.musicPlayerExpand)}>
-                <div class="text-sm font-medium text-90 truncate">{currentSong.title}</div>
-                <div class="text-xs text-50 truncate">{currentSong.artist}</div>
-            </div>
-            <div class="flex items-center gap-1">
-                <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
-                        on:click|stopPropagation={toggleHidden}
-                        title={i18n(Key.musicPlayerHide)}>
-                    <Icon icon="material-symbols:visibility-off" class="text-lg" />
-                </button>
-                <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
-                        on:click|stopPropagation={toggleExpanded}>
-                    <Icon icon="material-symbols:expand-less" class="text-lg" />
-                </button>
+<div id="music-player-panel" class="float-panel float-panel-closed absolute transition-all w-80 right-4 px-4 py-4 bg-[var(--card-bg)] rounded-xl shadow-xl z-50">
+    <div class="flex items-center gap-4 mb-4">
+        <div class="cover-container relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+            <img src={getAssetPath(currentSong.cover)} alt={i18n(Key.musicPlayerCover)}
+                    class="w-full h-full object-cover transition-transform duration-300"
+                    class:spinning={isPlaying && !isLoading}
+                    class:animate-pulse={isLoading} />
+        </div>
+        <div class="flex-1 min-w-0">
+            <div class="song-title text-lg font-bold text-90 truncate mb-1">{currentSong.title}</div>
+            <div class="song-artist text-sm text-50 truncate">{currentSong.artist}</div>
+            <div class="text-xs text-30 mt-1">
+                {formatTime(currentTime)} / {formatTime(duration)}
             </div>
         </div>
-    </div>
-    <!-- 展开状态的完整播放器（封面圆形） -->
-    <div class="expanded-player card-base bg-[var(--float-panel-bg)] shadow-xl rounded-2xl p-4 transition-all duration-500 ease-in-out"
-         class:opacity-0={!isExpanded}
-         class:scale-95={!isExpanded}
-         class:pointer-events-none={!isExpanded}>
-        <div class="flex items-center gap-4 mb-4">
-            <div class="cover-container relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
-                <img src={getAssetPath(currentSong.cover)} alt={i18n(Key.musicPlayerCover)}
-                     class="w-full h-full object-cover transition-transform duration-300"
-                     class:spinning={isPlaying && !isLoading}
-                     class:animate-pulse={isLoading} />
-            </div>
-            <div class="flex-1 min-w-0">
-                <div class="song-title text-lg font-bold text-90 truncate mb-1">{currentSong.title}</div>
-                <div class="song-artist text-sm text-50 truncate">{currentSong.artist}</div>
-                <div class="text-xs text-30 mt-1">
-                    {formatTime(currentTime)} / {formatTime(duration)}
-                </div>
-            </div>
-            <div class="flex items-center gap-1">
-                <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
-                        on:click={toggleHidden}
-                        title={i18n(Key.musicPlayerHide)}>
-                    <Icon icon="material-symbols:visibility-off" class="text-lg" />
-                </button>
-                <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
-                        class:text-[var(--primary)]={showPlaylist}
-                        on:click={togglePlaylist}
-                        title={i18n(Key.musicPlayerPlaylist)}>
-                    <Icon icon="material-symbols:queue-music" class="text-lg" />
-                </button>
-            </div>
-        </div>
-        <div class="progress-section mb-4">
-            <div class="progress-bar flex-1 h-2 bg-[var(--btn-regular-bg)] rounded-full cursor-pointer"
-                 bind:this={progressBar}
-                 on:click={setProgress}
-                 on:keydown={(e) => {
-                     if (e.key === 'Enter' || e.key === ' ') {
-                         e.preventDefault();
-                         const percent = 0.5;
-                         const newTime = percent * duration;
-						 if (audio) {
-                             audio.currentTime = newTime;
-							 currentTime = newTime;
-                         }
-                     }
-                 }}
-                 role="slider"
-                 tabindex="0"
-                 aria-label={i18n(Key.musicPlayerProgress)}
-                 aria-valuemin="0"
-                 aria-valuemax="100"
-                 aria-valuenow={duration > 0 ? (currentTime / duration * 100) : 0}>
-                <div class="h-full bg-[var(--primary)] rounded-full transition-all duration-100"
-                     style="width: {duration > 0 ? (currentTime / duration) * 100 : 0}%"></div>
-            </div>
-        </div>
-        <div class="controls flex items-center justify-center gap-2 mb-4">
-            <button class="w-10 h-10 rounded-lg"
-                    class:btn-regular={isShuffled}
-                    class:btn-plain={!isShuffled}
-                    on:click={toggleShuffle}
-                    disabled={playlist.length <= 1}>
-                <Icon icon="material-symbols:shuffle" class="text-lg" />
-            </button>
-            <button class="btn-plain w-10 h-10 rounded-lg" on:click={previousSong}
-                    disabled={playlist.length <= 1}>
-                <Icon icon="material-symbols:skip-previous" class="text-xl" />
-            </button>
-            <button class="btn-regular w-12 h-12 rounded-full"
-                    class:opacity-50={isLoading}
-                    disabled={isLoading}
-                    on:click={togglePlay}>
-                {#if isLoading}
-                    <Icon icon="eos-icons:loading" class="text-xl" />
-                {:else if isPlaying}
-                    <Icon icon="material-symbols:pause" class="text-xl" />
-                {:else}
-                    <Icon icon="material-symbols:play-arrow" class="text-xl" />
-                {/if}
-            </button>
-            <button class="btn-plain w-10 h-10 rounded-lg" on:click={() => nextSong()}
-                    disabled={playlist.length <= 1}>
-                <Icon icon="material-symbols:skip-next" class="text-xl" />
-            </button>
-            <button class="w-10 h-10 rounded-lg"
-                    class:btn-regular={isRepeating > 0}
-                    class:btn-plain={isRepeating === 0}
-                    on:click={toggleRepeat}>
-                {#if isRepeating === 1}
-                    <Icon icon="material-symbols:repeat-one" class="text-lg" />
-                {:else if isRepeating === 2}
-                    <Icon icon="material-symbols:repeat" class="text-lg" />
-                {:else}
-                    <Icon icon="material-symbols:repeat" class="text-lg opacity-50" />
-                {/if}
-            </button>
-        </div>
-        <div class="bottom-controls flex items-center gap-2">
-            <button class="btn-plain w-8 h-8 rounded-lg" on:click={toggleMute}>
-                {#if isMuted || volume === 0}
-                    <Icon icon="material-symbols:volume-off" class="text-lg" />
-                {:else if volume < 0.5}
-                    <Icon icon="material-symbols:volume-down" class="text-lg" />
-                {:else}
-                    <Icon icon="material-symbols:volume-up" class="text-lg" />
-                {/if}
-            </button>
-            <div class="flex-1 h-2 bg-[var(--btn-regular-bg)] rounded-full cursor-pointer touch-none"
-                 bind:this={volumeBar}
-                 on:pointerdown={startVolumeDrag}
-                 on:keydown={(e) => {
-                     if (e.key === 'Enter' || e.key === ' ') {
-                         e.preventDefault();
-						 if (e.key === 'Enter') toggleMute();
-                     }
-                 }}
-                 role="slider"
-                 tabindex="0"
-                 aria-label={i18n(Key.musicPlayerVolume)}
-                 aria-valuemin="0"
-                 aria-valuemax="100"
-                 aria-valuenow={volume * 100}>
-                <div class="h-full bg-[var(--primary)] rounded-full transition-all"
-                     class:duration-100={!isVolumeDragging}
-                     class:duration-0={isVolumeDragging}
-                     style="width: {volume * 100}%"></div>
-            </div>
+        <div class="flex items-center gap-1">
             <button class="btn-plain w-8 h-8 rounded-lg flex items-center justify-center"
-                    on:click={toggleExpanded}
-                    title={i18n(Key.musicPlayerCollapse)}>
-                <Icon icon="material-symbols:expand-more" class="text-lg" />
+                    class:text-[var(--primary)]={showPlaylist}
+                    on:click={togglePlaylist}
+                    title={i18n(Key.musicPlayerPlaylist)}>
+                <Icon icon="material-symbols:queue-music" class="text-lg" />
             </button>
+        </div>
+    </div>
+    <div class="progress-section mb-4">
+        <div class="progress-bar flex-1 h-2 bg-[var(--btn-regular-bg)] rounded-full cursor-pointer"
+                bind:this={progressBar}
+                on:click={setProgress}
+                on:keydown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const percent = 0.5;
+                        const newTime = percent * duration;
+                        if (audio) {
+                            audio.currentTime = newTime;
+                            currentTime = newTime;
+                        }
+                    }
+                }}
+                role="slider"
+                tabindex="0"
+                aria-label={i18n(Key.musicPlayerProgress)}
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow={duration > 0 ? (currentTime / duration * 100) : 0}>
+            <div class="h-full bg-[var(--primary)] rounded-full transition-all duration-100"
+                    style="width: {duration > 0 ? (currentTime / duration) * 100 : 0}%"></div>
+        </div>
+    </div>
+    <div class="controls flex items-center justify-center gap-2 mb-4">
+        <button class="w-10 h-10 rounded-lg"
+                class:btn-regular={isShuffled}
+                class:btn-plain={!isShuffled}
+                on:click={toggleShuffle}
+                disabled={playlist.length <= 1}>
+            <Icon icon="material-symbols:shuffle" class="text-lg" />
+        </button>
+        <button class="btn-plain w-10 h-10 rounded-lg" on:click={previousSong}
+                disabled={playlist.length <= 1}>
+            <Icon icon="material-symbols:skip-previous" class="text-xl" />
+        </button>
+        <button class="btn-regular w-12 h-12 rounded-full"
+                class:opacity-50={isLoading}
+                disabled={isLoading}
+                on:click={togglePlay}>
+            {#if isLoading}
+                <Icon icon="eos-icons:loading" class="text-xl" />
+            {:else if isPlaying}
+                <Icon icon="material-symbols:pause" class="text-xl" />
+            {:else}
+                <Icon icon="material-symbols:play-arrow" class="text-xl" />
+            {/if}
+        </button>
+        <button class="btn-plain w-10 h-10 rounded-lg" on:click={() => nextSong()}
+                disabled={playlist.length <= 1}>
+            <Icon icon="material-symbols:skip-next" class="text-xl" />
+        </button>
+        <button class="w-10 h-10 rounded-lg"
+                class:btn-regular={isRepeating > 0}
+                class:btn-plain={isRepeating === 0}
+                on:click={toggleRepeat}>
+            {#if isRepeating === 1}
+                <Icon icon="material-symbols:repeat-one" class="text-lg" />
+            {:else if isRepeating === 2}
+                <Icon icon="material-symbols:repeat" class="text-lg" />
+            {:else}
+                <Icon icon="material-symbols:repeat" class="text-lg opacity-50" />
+            {/if}
+        </button>
+    </div>
+    <div class="bottom-controls flex items-center gap-2">
+        <button class="btn-plain w-8 h-8 rounded-lg" on:click={toggleMute}>
+            {#if isMuted || volume === 0}
+                <Icon icon="material-symbols:volume-off" class="text-lg" />
+            {:else if volume < 0.5}
+                <Icon icon="material-symbols:volume-down" class="text-lg" />
+            {:else}
+                <Icon icon="material-symbols:volume-up" class="text-lg" />
+            {/if}
+        </button>
+        <div class="flex-1 h-2 bg-[var(--btn-regular-bg)] rounded-full cursor-pointer touch-none"
+                bind:this={volumeBar}
+                on:pointerdown={startVolumeDrag}
+                on:keydown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (e.key === 'Enter') toggleMute();
+                    }
+                }}
+                role="slider"
+                tabindex="0"
+                aria-label={i18n(Key.musicPlayerVolume)}
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow={volume * 100}>
+            <div class="h-full bg-[var(--primary)] rounded-full transition-all"
+                    class:duration-100={!isVolumeDragging}
+                    class:duration-0={isVolumeDragging}
+                    style="width: {volume * 100}%"></div>
         </div>
     </div>
     {#if showPlaylist}
-        <div class="playlist-panel float-panel fixed bottom-20 right-4 w-80 max-h-96 overflow-hidden z-50"
-             transition:slide={{ duration: 300, axis: 'y' }}>
+        <div class="playlist-overlay absolute inset-0 bg-[var(--card-bg)] rounded-xl z-10 flex flex-col overflow-hidden"
+                transition:slide={{ duration: 300, axis: 'y' }}>
             <div class="playlist-header flex items-center justify-between p-4 border-b border-[var(--line-divider)]">
                 <h3 class="text-lg font-semibold text-90">{i18n(Key.musicPlayerPlaylist)}</h3>
                 <button class="btn-plain w-8 h-8 rounded-lg" on:click={togglePlaylist}>
                     <Icon icon="material-symbols:close" class="text-lg" />
                 </button>
             </div>
-            <div class="playlist-content overflow-y-auto max-h-80 hide-scrollbar">
+            <div class="playlist-content overflow-y-auto flex-1 hide-scrollbar p-2">
                 {#each playlist as song, index}
-                    <div class="playlist-item flex items-center gap-3 p-3 hover:bg-[var(--btn-plain-bg-hover)] cursor-pointer transition-colors"
-                         class:bg-[var(--btn-plain-bg)]={index === currentIndex}
-                         class:text-[var(--primary)]={index === currentIndex}
-                         on:click={() => playSong(index)}
-                         on:keydown={(e) => {
-                             if (e.key === 'Enter' || e.key === ' ') {
-                                 e.preventDefault();
-								 playSong(index);
-                             }
-                         }}
-                         role="button"
-                         tabindex="0"
-                         aria-label="播放 {song.title} - {song.artist}">
+                    <div class="playlist-item flex items-center gap-3 p-3 hover:bg-[var(--btn-plain-bg-hover)] cursor-pointer transition-colors rounded-lg"
+                            class:bg-[var(--btn-plain-bg)]={index === currentIndex}
+                            class:text-[var(--primary)]={index === currentIndex}
+                            on:click={() => playSong(index)}
+                            on:keydown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    playSong(index);
+                                }
+                            }}
+                            role="button"
+                            tabindex="0"
+                            aria-label="播放 {song.title} - {song.artist}">
                         <div class="w-6 h-6 flex items-center justify-center">
                             {#if index === currentIndex && isPlaying}
                                 <Icon icon="material-symbols:graphic-eq" class="text-[var(--primary)] animate-pulse" />
@@ -701,9 +575,6 @@ onDestroy(() => {
                             {:else}
                                 <span class="text-sm text-[var(--content-meta)]">{index + 1}</span>
                             {/if}
-                        </div>
-                        <div class="w-10 h-10 rounded-lg overflow-hidden bg-[var(--btn-regular-bg)] flex-shrink-0">
-                            <img src={getAssetPath(song.cover)} alt={song.title} loading="lazy" class="w-full h-full object-cover" />
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="font-medium truncate" class:text-[var(--primary)]={index === currentIndex} class:text-90={index !== currentIndex}>
@@ -721,58 +592,6 @@ onDestroy(() => {
 </div>
 
 <style>
-.orb-player {
-	position: relative;
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-}
-.orb-player::before {
-	content: '';
-	position: absolute;
-	inset: -0.125rem;
-	background: linear-gradient(45deg, var(--primary), transparent, var(--primary));
-	border-radius: 50%;
-	z-index: -1;
-	opacity: 0;
-	transition: opacity 0.3s ease;
-}
-.orb-player:hover::before {
-	opacity: 0.3;
-	animation: rotate 2s linear infinite;
-}
-.orb-player .animate-pulse {
-	animation: musicWave 1.5s ease-in-out infinite;
-}
-@keyframes rotate {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
-}
-@keyframes musicWave {
-	0%, 100% { transform: scaleY(0.5); }
-	50% { transform: scaleY(1); }
-}
-.music-player.hidden-mode {
-	width: 3rem;
-	height: 3rem;
-}
-.music-player {
-    max-width: 20rem;
-    user-select: none;
-}
-.mini-player {
-    width: 17.5rem;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    /*left: 0;*/
-}
-.expanded-player {
-    width: 20rem;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-}
-
 .animate-pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -789,44 +608,7 @@ onDestroy(() => {
     transform: scaleY(1.2);
     transition: transform 0.2s ease;
 }
-@media (max-width: 768px) {
-    .music-player {
-        max-width: 280px !important;
-        /*left: 0.5rem !important;*/
-        bottom: 0.5rem !important;
-        right: 0.5rem !important;
-	}
-    .mini-player {
-        width: 280px;
-    }
-    .music-player.expanded {
-        width: calc(100vw - 16px);
-        max-width: none;
-        /*left: 0.5rem !important;*/
-        right: 0.5rem !important;
-	}
-    .playlist-panel {
-        width: calc(100vw - 16px) !important;
-        /*left: 0.5rem !important;*/
-        right: 0.5rem !important;
-        max-width: none;
-	}
-    .controls {
-        gap: 8px;
-	}
-    .controls button {
-        width: 36px;
-        height: 36px;
-	}
-    .controls button:nth-child(3) {
-        width: 44px;
-        height: 44px;
-	}
-}
 @media (max-width: 480px) {
-    .music-player {
-        max-width: 260px;
-	}
     .song-title {
         font-size: 14px;
 	}
@@ -848,10 +630,6 @@ onDestroy(() => {
     .playlist-item {
         padding: 8px 12px;
 	}
-    .playlist-item .w-10 {
-        width: 32px;
-        height: 32px;
-	}
 }
 @keyframes slide-up {
     from {
@@ -865,16 +643,6 @@ onDestroy(() => {
 }
 .animate-slide-up {
     animation: slide-up 0.3s ease-out;
-}
-@media (hover: none) and (pointer: coarse) {
-    .music-player button,
-    .playlist-item {
-        min-height: 44px;
-	}
-    .progress-section > div,
-    .bottom-controls > div:nth-child(2) {
-        height: 12px;
-	}
 }
 /* 自定义旋转动画，停止时保持当前位置 */
 @keyframes spin-continuous {

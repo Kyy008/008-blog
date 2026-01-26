@@ -1,15 +1,13 @@
 ---
 import { Icon } from "astro-icon/components";
-import { navBarConfig, siteConfig } from "../config";
+import { navBarConfig, siteConfig, musicPlayerConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
 import { LinkPreset, type NavBarLink } from "../types/config";
 import { url } from "../utils/url-utils";
-import LayoutSwitchButton from "./LayoutSwitchButton.svelte";
-import LightDarkSwitch from "./LightDarkSwitch.svelte";
 import MobileTOC from "./MobileTOC.svelte";
 import Search from "./Search.svelte";
-import WallpaperSwitch from "./WallpaperSwitch.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
+import MusicPlayer from "./widget/MusicPlayer.svelte";
 import DropdownMenu from "./widget/DropdownMenu.astro";
 import NavMenuPanel from "./widget/NavMenuPanel.astro";
 
@@ -68,6 +66,11 @@ let links: NavBarLink[] = navBarConfig.links.map(
                 <Search client:only="svelte"></Search>
             </div>
             {siteConfig.toc.enable && <MobileTOC client:only="svelte"></MobileTOC>}
+            {musicPlayerConfig.enable && (
+                <button aria-label="Music Player" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="music-player-switch">
+                    <Icon name="material-symbols:music-note" class="text-[1.25rem]"></Icon>
+                </button>
+            )}
             {!siteConfig.themeColor.fixed && (
                     <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
                         <Icon name="material-symbols:settings-outline" class="text-[1.25rem]"></Icon>
@@ -79,6 +82,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
         </div>
         <NavMenuPanel links={links}></NavMenuPanel>
         <DisplaySettings client:only="svelte"></DisplaySettings>
+        <MusicPlayer client:only="svelte"></MusicPlayer>
     </div>
 </div>
 
@@ -140,6 +144,13 @@ async function loadButtonScript() {
             };
         }
 
+        let musicBtn = document.getElementById("music-player-switch");
+        if (musicBtn) {
+            musicBtn.onclick = async function () {
+                await panelManager.togglePanel('music-player-panel');
+            };
+        }
+
         let menuBtn = document.getElementById("nav-menu-switch");
         if (menuBtn) {
             menuBtn.onclick = async function () {
@@ -155,6 +166,16 @@ async function loadButtonScript() {
                 let settingPanel = document.getElementById("display-setting");
                 if (settingPanel) {
                     settingPanel.classList.toggle("float-panel-closed");
+                }
+            };
+        }
+
+        let musicBtn = document.getElementById("music-player-switch");
+        if (musicBtn) {
+            musicBtn.onclick = function () {
+                let musicPanel = document.getElementById("music-player-panel");
+                if (musicPanel) {
+                    musicPanel.classList.toggle("float-panel-closed");
                 }
             };
         }
