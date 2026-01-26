@@ -32,7 +32,7 @@ export const siteConfig: SiteConfig = {
 	lang: SITE_LANG,
 
 	themeColor: {
-		hue: 60, // 主题色的默认色相，范围从 0 到 360。例如：红色：0，青色：200，蓝绿色：250，粉色：345
+		hue: 240, // 主题色的默认色相，范围从 0 到 360。例如：红色：0，青色：200，蓝绿色：250，粉色：345
 		fixed: false, // 对访问者隐藏主题色选择器
 	},
 
@@ -93,7 +93,7 @@ export const siteConfig: SiteConfig = {
 	// 壁纸模式配置
 	wallpaperMode: {
 		// 默认壁纸模式：banner=顶部横幅，fullscreen=全屏壁纸，none=无壁纸
-		defaultMode: "banner",
+		defaultMode: "fullscreen",
 		// 整体布局方案切换按钮显示设置（默认："desktop"）
 		// "off" = 不显示
 		// "mobile" = 仅在移动端显示
