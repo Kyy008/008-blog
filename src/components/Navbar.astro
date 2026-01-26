@@ -17,10 +17,6 @@ const className = Astro.props.class;
 const navbarTransparentMode =
 	siteConfig.banner?.navbar?.transparentMode || "semi";
 
-// 获取整体布局方案切换按钮显示设置
-const modeSwitchDisplay =
-	siteConfig.wallpaperMode?.showModeSwitchOnMobile || "desktop";
-
 // 检查是否为首页
 const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "";
 
