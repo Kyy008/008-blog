@@ -47,6 +47,9 @@ export const zh_CN: Translation = {
 	[Key.postsCount]: "篇文章",
 
 	[Key.themeColor]: "主题色",
+	[Key.themeMode]: "主题模式",
+	[Key.wallpaperMode]: "壁纸模式",
+	[Key.layoutMode]: "布局模式",
 
 	[Key.lightMode]: "亮色",
 	[Key.darkMode]: "暗色",
