@@ -47,3 +47,6 @@ src/data/bangumi-data.json
 
 # Bilibili generated data
 src/data/bilibili-data.json
+
+# Obsidian config
+.obsidian/
