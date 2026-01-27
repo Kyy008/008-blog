@@ -478,22 +478,12 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 				collapseThreshold: 20,
 			},
 		},
-		{
-			// 组件类型：站点统计组件
-			type: "site-stats",
-			// 组件位置
-			position: "top",
-			// CSS 类名
-			class: "onload-animation",
-			// 动画延迟时间
-			animationDelay: 200,
-		},
 	],
 
 	// 侧栏组件布局配置
 	components: {
 		left: ["profile", "categories", "tags"],
-		right: ["site-stats"],
+		right: [],
 		drawer: ["profile"],
 	},
 

@@ -1,7 +1,8 @@
 ---
 import { Icon } from "astro-icon/components";
-import { profileConfig, umamiConfig } from "../../config";
+import { profileConfig, umamiConfig, siteConfig } from "../../config";
 import { url } from "../../utils/url-utils";
+import { getSortedPosts } from "../../utils/content-utils";
 import ImageWrapper from "../misc/ImageWrapper.astro";
 import TypewriterText from "../TypewriterText.astro";
 import I18nKey from "../../i18n/i18nKey";
@@ -12,6 +13,9 @@ const umamiEnabled = umamiConfig.enabled || false;
 const umamiWebsiteId = umamiConfig.scripts.match(/data-website-id="([^"]+)"/)?.[1] || "";
 const umamiApiKey = umamiConfig.apiKey || "";
 const umamiBaseUrl = umamiConfig.baseUrl || "";
+
+const posts = await getSortedPosts();
+const siteStartDate = siteConfig.siteStartDate || "2025-01-01";
 ---
 
 <div class="card-base p-3">
@@ -56,6 +60,28 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
                     {profileConfig.links[0].name}
                 </a>
             }
+        </div>
+        
+        <hr class="w-full border-t border-neutral-200 dark:border-neutral-700 my-4" />
+
+        <div class="grid grid-cols-2">
+            <!-- 文章数 -->
+            <div class="flex flex-col items-center justify-center border-r border-neutral-200 dark:border-neutral-700">
+                <div class="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400 mb-1">
+                    <Icon name="material-symbols:article-outline" class="text-sm" />
+                    <span class="text-xs font-medium">{i18n(I18nKey.siteStatsPostCount)}</span>
+                </div>
+                <span class="text-xl font-bold text-neutral-900 dark:text-neutral-100 leading-none">{posts.length}</span>
+            </div>
+
+            <!-- 运行天数 -->
+            <div class="flex flex-col items-center justify-center">
+                <div class="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400 mb-1">
+                    <Icon name="material-symbols:calendar-clock-outline" class="text-sm" />
+                    <span class="text-xs font-medium">{i18n(I18nKey.siteStatsRunningDays)}</span>
+                </div>
+                <span class="text-xl font-bold text-neutral-900 dark:text-neutral-100 leading-none profile-running-days">0</span>
+            </div>
         </div>
         
         {umamiEnabled && (
@@ -118,3 +144,24 @@ const umamiBaseUrl = umamiConfig.baseUrl || "";
         }
     </script>
 )}
+
+<script is:inline define:vars={{ siteStartDate }}>
+    function updateProfileRunningDays() {
+        const startDate = new Date(siteStartDate);
+        const now = new Date();
+        const diffTime = Math.abs(now - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        const els = document.querySelectorAll('.profile-running-days');
+        els.forEach(el => {
+            el.innerText = diffDays;
+        });
+    }
+    
+    // 支持 Astro View Transitions
+    document.addEventListener('astro:page-load', updateProfileRunningDays);
+    // 同时也支持普通的 DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', updateProfileRunningDays);
+    // 立即执行一次
+    updateProfileRunningDays();
+</script>
