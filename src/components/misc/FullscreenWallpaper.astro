@@ -136,6 +136,27 @@ const renderGroups = [
 						sessionStorage.setItem(storageKey, newIndex.toString());
 						return images[newIndex];
 					};
+
+					// 暴露随机切换壁纸的方法到全局
+					window.setRandomWallpaper = function() {
+						const desktopSrc = getRandomImage(desktopImages, 'wallpaper_desktop_index');
+						const mobileSrc = getRandomImage(mobileImages, 'wallpaper_mobile_index');
+						
+						const updateImage = (selector, newSrc) => {
+							const img = document.querySelector(selector);
+							if (img && newSrc) {
+								img.style.transition = 'opacity 0.5s ease-in-out';
+								img.style.opacity = '0';
+								setTimeout(() => {
+									img.src = newSrc;
+									img.onload = () => { img.style.opacity = '1'; };
+								}, 500);
+							}
+						};
+
+						updateImage('#wallpaper-single-container .hidden.lg\\:block img', desktopSrc);
+						updateImage('#wallpaper-single-container .block.lg\\:hidden img', mobileSrc);
+					};
 					
 					const desktopSrc = getRandomImage(desktopImages, 'wallpaper_desktop_index');
 					const mobileSrc = getRandomImage(mobileImages, 'wallpaper_mobile_index');

@@ -189,6 +189,14 @@ $: if (isMounted) {
             before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
             before:absolute before:-left-3 before:top-[0.33rem]">
             {i18n(I18nKey.wallpaperMode)}
+            {#if wallpaperMode === 'fullscreen'}
+            <button aria-label="Random Wallpaper" class="btn-regular w-7 h-7 rounded-md active:scale-90 flex items-center justify-center transition-all"
+                    on:click={() => (window as any).setRandomWallpaper && (window as any).setRandomWallpaper()}>
+                    <div class="text-[var(--btn-content)]">
+                        <Icon icon="fa6-solid:dice" class="text-[0.75rem]"></Icon>
+                    </div>
+            </button>
+            {/if}
         </div>
         <div class="flex gap-1 bg-[var(--btn-regular-bg)] rounded-lg p-1">
             {#each wallpaperOptions as option}
