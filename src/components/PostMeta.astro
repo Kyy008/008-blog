@@ -27,6 +27,7 @@ export interface Props {
 	words?: number; // 字数统计
 	minutes?: number; // 阅读时间（分钟）
 	showWordCount?: boolean; // 是否显示字数统计
+    isCard?: boolean; // 是否是文章卡片
 }
 
 const {
@@ -43,6 +44,7 @@ const {
 	words,
 	// minutes,
 	showWordCount = false, // 默认不显示字数统计
+    isCard = false,
 } = Astro.props;
 ---
 
@@ -113,33 +115,37 @@ const {
         </div>
     )}
     
-    <!-- 访问量（首页不显示，且umami.enabled为true时显示） -->
-    {!isHome && umamiEnabled && id && (
-        <div class="flex items-center">
-            <div class="meta-icon">
-                <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
+    <!-- 访问量（isHome为true时通常不显示，但在卡片模式下我们需要显示） -->
+    {umamiEnabled && id && (
+        <>
+            <div class="flex items-center">
+                <div class="meta-icon">
+                    <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
+                </div>
+                <span class="text-50 text-sm font-medium page-views-display" data-id={id}>-</span>
             </div>
-            <span class="text-50 text-sm font-medium" id="page-views-display">统计加载中...</span>
-        </div>
+            <div class="flex items-center">
+                <div class="meta-icon">
+                    <Icon name="material-symbols:person-outline-rounded" class="text-xl"></Icon>
+                </div>
+                <span class="text-50 text-sm font-medium visitors-display" data-id={id}>-</span>
+            </div>
+        </>
     )}
 </div>
 
-<!-- 只有在非首页且启用umami且有slug时才加载脚本 -->
-{!isHome && umamiEnabled && id && (
-    <script is:inline define:vars={{ id, umamiBaseUrl, umamiApiKey, umamiWebsiteId, umamiConfig }}>
-        // 客户端统计文案生成函数
-        function generateStatsText(pageViews, visitors) {
-            return `浏览量 ${pageViews} · 访客 ${visitors}`;
-        }
-        
+<!-- 脚本逻辑优化，支持批量处理卡片 -->
+{umamiEnabled && (
+    <script is:inline define:vars={{ umamiBaseUrl, umamiApiKey, umamiWebsiteId, umamiEnabled }}>
         // 获取访问量统计
-        async function fetchPageViews(isRetry = false) {
+        async function fetchPageViews(id) {
             // @ts-ignore
-        if (!umamiConfig.enabled || !umamiWebsiteId || !id) return;
+            if (!umamiEnabled || !umamiWebsiteId || !id) return;
             
             try {
-                // 构造文章页面的URL路径
-                const pageUrl = `/posts/${id}/`;
+                // 构造文章页面的URL路径 (注意这里需要处理 .md 扩展名)
+                const slug = id.replace(/\.md$/, '');
+                const pageUrl = `/posts/${slug}/`;
                 
                 // 调用全局工具获取特定页面的 Umami 统计数据
                 const stats = await getUmamiPageStats(umamiBaseUrl, umamiApiKey, umamiWebsiteId, pageUrl);
@@ -148,24 +154,54 @@ const {
                 const pageViews = stats.pageviews || 0;
                 const visitors = stats.visitors || 0;
                 
-                const displayElement = document.getElementById('page-views-display');
-                if (displayElement) {
-                    displayElement.textContent = generateStatsText(pageViews, visitors);
-                }
+                // 更新浏览量
+                const pageViewsElements = document.querySelectorAll(`.page-views-display[data-id="${id}"]`);
+                pageViewsElements.forEach(el => {
+                    el.textContent = `${pageViews} 次`;
+                });
+
+                // 更新访客数
+                const visitorsElements = document.querySelectorAll(`.visitors-display[data-id="${id}"]`);
+                visitorsElements.forEach(el => {
+                    el.textContent = `${visitors} 人`;
+                });
+
             } catch (error) {
-                console.error('Error fetching page views:', error);
-                const displayElement = document.getElementById('page-views-display');
-                if (displayElement) {
-                    displayElement.textContent = '统计不可用';
-                }
+                console.error(`Error fetching page views for ${id}:`, error);
+                const pageViewsElements = document.querySelectorAll(`.page-views-display[data-id="${id}"]`);
+                pageViewsElements.forEach(el => {
+                    el.textContent = '-';
+                });
+                const visitorsElements = document.querySelectorAll(`.visitors-display[data-id="${id}"]`);
+                visitorsElements.forEach(el => {
+                    el.textContent = '-';
+                });
             }
+        }
+
+        // 批量处理所有需要显示的元素
+        function fetchAllStats() {
+            const elements = document.querySelectorAll('.page-views-display');
+            // 使用 Set 去重，避免重复请求
+            const ids = new Set();
+            elements.forEach(el => {
+                const id = el.getAttribute('data-id');
+                if (id) ids.add(id);
+            });
+
+            ids.forEach(id => {
+                fetchPageViews(id);
+            });
         }
 
         // 页面加载完成后获取统计数据
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', fetchPageViews);
+            document.addEventListener('DOMContentLoaded', fetchAllStats);
         } else {
-            fetchPageViews();
+            fetchAllStats();
         }
+        
+        // 支持 Astro View Transitions
+        document.addEventListener('astro:page-load', fetchAllStats);
     </script>
 )}
