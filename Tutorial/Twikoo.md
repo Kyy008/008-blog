@@ -16,9 +16,15 @@
 
 我们将使用 Docker 和 Docker Compose 来运行 Twikoo 服务端。这种方式便于管理和升级，且数据易于备份。
 
-### 1.1 安装 Docker 和 Docker Compose
+# 🚀 Twikoo 后端 Docker 部署指南 (国内服务器 + Mac 本地中转版)
 
-如果你还没有安装 Docker，请先执行以下命令：
+> **前言**：由于国内 Docker Hub 访问受限，且 Mac (ARM 架构) 与服务器 (x86 架构) 存在芯片差异，本教程采用**“本地跨平台拉取 -> 上传 -> 离线加载”**的方案，确保 100% 部署成功。
+
+## 1.1 服务器环境准备 (Server Side)
+
+首先登录你的云服务器，确保 Docker 环境就绪。
+
+### 1.1.1 安装 Docker 和 Docker Compose
 
 ```bash
 # 更新软件源
@@ -27,7 +33,7 @@ sudo apt update
 # 安装 Docker
 sudo apt install docker.io -y
 
-# 安装 Docker Compose (如果你使用较新版本的 docker，可能已经内置了 docker compose 命令，可以跳过此步或检查版本)
+# 安装 Docker Compose
 sudo apt install docker-compose -y
 
 # 启动 Docker 并设置开机自启
@@ -35,7 +41,7 @@ sudo systemctl start docker
 sudo systemctl enable docker
 ```
 
-### 1.2 创建部署目录
+### 1.1.2 创建部署目录
 
 在服务器上创建一个目录用于存放 Twikoo 的配置和数据：
 
@@ -44,15 +50,68 @@ mkdir -p ~/twikoo
 cd ~/twikoo
 ```
 
-### 1.3 编写 docker-compose.yml
+## 1.2 解决镜像问题 (Mac Side)
 
-创建并编辑 `docker-compose.yml` 文件：
+**注意：** 这一步请在你的 **Mac 本地终端**执行，不要在服务器上执行。
+
+### 1.2.1 Mac 本地拉取兼容镜像
+
+由于服务器通常是 x86 架构（AMD64），而 Mac (M1/M2/M3) 是 ARM 架构，必须指定 `--platform`，否则服务器运行会报 `exec format error`。
+
+```bash
+# 在 Mac 终端执行
+docker pull --platform linux/amd64 imaegoo/twikoo
+```
+
+### 1.2.2 打包并上传
+
+将镜像打包并通过 SCP 上传到服务器（请替换为你的真实 IP 和用户名）：
+
+```bash
+# 1. 打包成文件
+docker save -o twikoo_amd64.tar imaegoo/twikoo
+
+# 2. 上传到服务器 (以 kyy008 用户为例，请替换为你的实际用户和IP)
+scp twikoo_amd64.tar kyy008@39.102.59.66:~
+```
+
+## 1.3 服务器加载与配置 (Server Side)
+
+回到服务器终端继续操作。
+
+### 1.3.1 加载离线镜像
+
+加载刚刚上传的镜像包：
+
+```bash
+# 需输入密码
+sudo docker load -i ~/twikoo_amd64.tar
+```
+
+看到 `Loaded image: imaegoo/twikoo:latest` 即表示成功。
+
+### 1.3.2 预先创建数据目录并授权
+
+为了防止出现 `EACCES: permission denied` 导致的无限重启，我们预先建立数据目录并放开权限。
+
+```bash
+# 确保在 ~/twikoo 目录下
+cd ~/twikoo
+
+# 创建并授权
+mkdir data
+sudo chmod -R 777 data
+```
+
+### 1.3.3 编写 docker-compose.yml
+
+创建并编辑文件：
 
 ```bash
 nano docker-compose.yml
 ```
 
-写入以下内容：
+写入以下内容（注意 `pull_policy` 字段是成功的关键）：
 
 ```yaml
 version: '3'
@@ -61,24 +120,47 @@ services:
     image: imaegoo/twikoo
     container_name: twikoo
     restart: always
+    #强制使用本地镜像，禁止联网拉取
+    pull_policy: never 
     ports:
       - 8080:8080
     environment:
-      - TWIKOO_THROTTLE=1000 # 请求限流配置（可选）
+      - TWIKOO_THROTTLE=1000 
     volumes:
       - ./data:/app/data
 ```
 
-*   **端口映射**：`8080:8080` 表示将容器内的 8080 端口映射到宿主机的 8080 端口。
-*   **数据卷**：`./data:/app/data` 表示将评论数据保存在当前目录下的 `data` 文件夹中，**请务必做好该目录的备份**。
+## 1.4 启动与验证
 
-### 1.4 启动服务
+### 1.4.1 启动服务
 
 ```bash
 sudo docker-compose up -d
 ```
 
-启动后，Twikoo 应该已经在服务器的 `8080` 端口运行了。你可以通过 `curl localhost:8080` 测试是否连通。
+预期输出：`Creating twikoo ... done`
+
+### 1.4.2 检查运行状态
+
+```bash
+sudo docker ps
+```
+
+*   **成功标准**：STATUS 显示 `Up x seconds` (例如 `Up 14 seconds`)。
+*   **失败标准**：STATUS 显示 `Restarting` 或 `Exited`。
+
+### 1.4.3 放行防火墙 (安全组)
+
+如果容器状态正常但浏览器打不开，请务必去阿里云/腾讯云控制台：
+
+1.  找到 “安全组” 或 “防火墙”。
+2.  添加入站规则：TCP `8080`，允许所有 IP (`0.0.0.0/0`) 访问。
+
+### 1.5 测试访问
+
+在浏览器输入： `http://39.102.59.66:8080`
+
+看到 Twikoo 的初始化配置界面，即代表部署圆满完成！
 
 ---
 
