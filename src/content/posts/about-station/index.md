@@ -3,8 +3,10 @@ title: 关于本站
 published: 2026-01-24
 description: 本站起源，一切从这里开始。
 image: ./cover.webp
-tags: [本站, 杂谈]
-category: 杂谈
+tags:
+  - 本站
+  - 杂谈
+category: 关于博客
 draft: false
 ---
 
