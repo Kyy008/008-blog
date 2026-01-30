@@ -68,29 +68,45 @@ const siteStartDate = siteConfig.siteStartDate || "2025-01-01";
             <!-- 文章数 -->
             <div class="flex flex-col items-center justify-center border-r border-neutral-200 dark:border-neutral-700">
                 <div class="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400 mb-1">
-                    <Icon name="material-symbols:article-outline" class="text-sm" />
-                    <span class="text-xs font-medium">{i18n(I18nKey.siteStatsPostCount)}</span>
+                    <Icon name="material-symbols:article-outline" class="text-base" />
+                    <span class="text-sm font-medium">{i18n(I18nKey.siteStatsPostCount)}</span>
                 </div>
-                <span class="text-xl font-bold text-neutral-900 dark:text-neutral-100 leading-none">{posts.length}</span>
+                <span class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 leading-none">{posts.length}</span>
             </div>
 
             <!-- 运行天数 -->
             <div class="flex flex-col items-center justify-center">
                 <div class="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400 mb-1">
-                    <Icon name="material-symbols:calendar-clock-outline" class="text-sm" />
-                    <span class="text-xs font-medium">{i18n(I18nKey.siteStatsRunningDays)}</span>
+                    <Icon name="material-symbols:calendar-clock-outline" class="text-base" />
+                    <span class="text-sm font-medium">{i18n(I18nKey.siteStatsRunningDays)}</span>
                 </div>
-                <span class="text-xl font-bold text-neutral-900 dark:text-neutral-100 leading-none profile-running-days">0</span>
+                <span class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 leading-none profile-running-days">0</span>
             </div>
+
+            {umamiEnabled && (
+                <>
+                    <div class="col-span-2 w-full border-t border-neutral-200 dark:border-neutral-700 my-3"></div>
+
+                    <!-- 浏览量 -->
+                    <div class="flex flex-col items-center justify-center border-r border-neutral-200 dark:border-neutral-700">
+                        <div class="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400 mb-1">
+                            <Icon name="material-symbols:visibility-outline-rounded" class="text-base" />
+                            <span class="text-sm font-medium">{i18n(I18nKey.profileStatsPageViews)}</span>
+                        </div>
+                        <span class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 leading-none" id="profile-page-views">--</span>
+                    </div>
+
+                    <!-- 访问次数 -->
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400 mb-1">
+                            <Icon name="material-symbols:person-outline" class="text-base" />
+                            <span class="text-sm font-medium">{i18n(I18nKey.profileStatsVisits)}</span>
+                        </div>
+                        <span class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 leading-none" id="profile-visits">--</span>
+                    </div>
+                </>
+            )}
         </div>
-        
-        {umamiEnabled && (
-            <hr class="my-2 border-t border-dashed border-gray-300 dark:border-gray-700" />
-            <div class="text-sm text-gray-500 mt-2 text-center">
-                <Icon name="fa6-solid:eye" class="inline-block mr-1 text-gray-400 text-sm align-middle" />
-                <span class="site-stats-display">{i18n(I18nKey.profileStatsLoading)}</span>
-            </div>
-        )}
     </div>
 </div>
 
@@ -99,16 +115,8 @@ const siteStartDate = siteConfig.siteStartDate || "2025-01-01";
         umamiBaseUrl, 
         umamiApiKey, 
         umamiWebsiteId, 
-        umamiConfig,
-        profileStatsPageViews: i18n(I18nKey.profileStatsPageViews),
-        profileStatsVisits: i18n(I18nKey.profileStatsVisits),
-        profileStatsUnavailable: i18n(I18nKey.profileStatsUnavailable)
+        umamiConfig
     }}>
-        // 客户端统计文案生成函数
-        function generateStatsText(pageViews, visits) {
-            return `${profileStatsPageViews} ${pageViews} · ${profileStatsVisits} ${visits}`;
-        }
-        
         // 获取访问量统计
         async function fetchSiteStats() {
             if (!umamiConfig.enabled) {
@@ -123,16 +131,16 @@ const siteStartDate = siteConfig.siteStartDate || "2025-01-01";
                 const pageViews = stats.pageviews || 0;
                 const visits = stats.visits || 0;
                 
-                const displayElements = document.querySelectorAll('.site-stats-display');
-                displayElements.forEach(element => {
-                    element.textContent = generateStatsText(pageViews, visits);
-                });
+                const pageViewsEl = document.getElementById('profile-page-views');
+                const visitsEl = document.getElementById('profile-visits');
+                if (pageViewsEl) pageViewsEl.textContent = pageViews;
+                if (visitsEl) visitsEl.textContent = visits;
             } catch (error) {
                 console.error('Error fetching site stats:', error);
-                const displayElements = document.querySelectorAll('.site-stats-display');
-                displayElements.forEach(element => {
-                    element.textContent = profileStatsUnavailable;
-                });
+                const pageViewsEl = document.getElementById('profile-page-views');
+                const visitsEl = document.getElementById('profile-visits');
+                if (pageViewsEl) pageViewsEl.textContent = "-";
+                if (visitsEl) visitsEl.textContent = "-";
             }
         }
 
