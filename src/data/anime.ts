@@ -11,7 +11,7 @@ const localAnimeList: AnimeItem[] = [
 	{	
 		title: "魔法少女小圆",
 		cover: "/assets/anime/xiaoyuan.webp",
-		description: "可爱的画风下，叙述着黑暗的故事。拥有别具一格的艺术表达、充满哲思的蕴藏内涵",
+		description: "个人剧情向 TOP1 作品（配合《叛逆的物语》食用），圆神😭",
 		year: "2011",
 		link: "https://www.bilibili.com/bangumi/media/md2539",
 	},
@@ -25,14 +25,14 @@ const localAnimeList: AnimeItem[] = [
 	{
 		title: "进击的巨人",
 		cover: "/assets/anime/juren.webp",
-		description: "剧情、热血向，自由与桎梏的对抗",
+		description: "",
 		year: "2013",
 		link: "https://www.dmla4.com/video/3702.html",
 	},
 	{
 		title: "请问您今天要来点兔子吗？",
 		cover: "/assets/anime/diantu.webp",
-		description: "Kyy008的单推角色【香风智乃】的出处作品。仅凭萌系与日常的剧情足以治愈心灵",
+		description: "Kyy008的单推角色【香风智乃】的出处作品☺️",
 		year: "2014",
 		link: "https://www.bilibili.com/bangumi/media/md2762",
 	},
@@ -53,10 +53,18 @@ const localAnimeList: AnimeItem[] = [
 	{
 		title: "某科学的超电磁炮",
 		cover: "/assets/anime/pao.webp",
-		description: "观看于2018年，是Kyy008的二次元入坑作，bilibili的站名起源",
+		description: "Kyy008的二次元入坑作",
 		year: "2009",
 		link: "https://www.bilibili.com/bangumi/media/md425",
+	},
+	{
+		title: "学园孤岛",
+		cover: "/assets/anime/zombie.webp",
+		description: "让 Kyy008 深刻体会到陪伴和精神支柱是身处绝境的拯救与治愈。可惜剧情不是很刀（bushi",
+		year: "2015",
+		link: "https://www.bilibili.com/bangumi/media/md2592",
 	}
+
 ];
 
 export default localAnimeList;

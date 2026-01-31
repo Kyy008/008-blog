@@ -44,7 +44,7 @@
 #decrypted-content .frame pre {
   @apply p-4 overflow-x-auto m-0;
   font-family: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 0.875rem;
+  font-size: 1rem;
   line-height: 1.5rem;
   background: var(--codeblock-bg);
 }

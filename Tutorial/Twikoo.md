@@ -59,7 +59,6 @@ cd ~/twikoo
 由于服务器通常是 x86 架构（AMD64），而 Mac (M1/M2/M3) 是 ARM 架构，必须指定 `--platform`，否则服务器运行会报 `exec format error`。
 
 ```bash
-# 在 Mac 终端执行
 docker pull --platform linux/amd64 imaegoo/twikoo
 ```
 
@@ -84,7 +83,6 @@ scp twikoo_amd64.tar kyy008@39.102.59.66:~
 加载刚刚上传的镜像包：
 
 ```bash
-# 需输入密码
 sudo docker load -i ~/twikoo_amd64.tar
 ```
 
