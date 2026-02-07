@@ -57,7 +57,7 @@
 		"marked": "^16.4.2",
 		"node-html-parser": "^7.0.1",
 		"oh-my-live2d": "^0.19.3",
-		"overlayscrollbars": "^2.13.0",
+		"overlayscrollbars": "^2.14.0",
 		"pagefind": "^1.4.0",
 		"photoswipe": "^5.4.4",
 		"qrcode": "^1.5.4",
