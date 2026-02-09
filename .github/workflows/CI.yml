@@ -2,9 +2,9 @@ name: Fuwari-yCENzh CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 
 concurrency:
@@ -61,12 +61,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Astro Build
-        run: pnpm astro build
+        run: pnpm build
         env:
           ENABLE_CONTENT_SYNC: false
 
       - name: Deploy to Server
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         uses: easingthemes/ssh-deploy@v5.1.0
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
