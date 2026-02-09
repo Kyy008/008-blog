@@ -18,7 +18,7 @@ Kyy008 没有选择使用 NAS 来搭建自己的云盘：不仅价格较为昂�
 # OpenList 网盘聚合器
 ## AList 已死
 
-AList 原本是最大的开源网盘挂载工具，却于 25 年中旬在没有声明的情况下将所有权出售给商业公司，与开源精神的初衷背道而驰；更有甚者，在被收购后的版本中，在 Docker 镜像和源码中被发现了未经用户同意、默认开启的数据上报代码，用户隐私形同虚设。因此寻找能平替 Alist 的工具是最好选择。
+AList 原本是最大的开源网盘挂载工具，却于 25 年中旬在没有声明的情况下将所有权出售给商业公司，与开源精神的初衷背道而驰；更有甚者，在被收购后的版本中，在 Docker 镜像和源码中被发现了未经用户同意、默认开启的数据上报代码，用户隐私形同虚设。因此寻找能平替 AList 的工具是最好选择。
 
 ::github{repo="AlistGo/alist"}
 
@@ -120,7 +120,7 @@ docker run -d --restart=always \
 ```
 设置管理员密码
 ```bash
-docker exec -it alist ./alist admin set 你设置的密码
+docker exec -it openlist ./openlist admin set 你设置的密码
 ```
 ### Nginx 反向代理
 将`ip:5244` 映射到我们的子域名，首先创建配置文件
@@ -128,7 +128,7 @@ docker exec -it alist ./alist admin set 你设置的密码
 nano /etc/nginx/conf.d/pan.conf
 ```
 粘贴下面内容，注意替换为你的域名
-```yaml
+```nginx
 server {
     listen 80;
     server_name 你的子域名;
@@ -149,7 +149,7 @@ server {
 ```
 现在浏览器访问你的域名，用户名`admin`，密码是刚刚设置的，就能看到 OpenList 首页了
 ![](../../assets/image/index-56.png)
-## 在 AList 后台挂载本地存储
+## 在 OpenList 后台挂载本地存储
 点击`转到存储`，点击`添加`，我们驱动选择`本地存储`
 ![](../../assets/image/index-57.png)
 下面说明表单中有必要填写的值，其余保持默认即可
