@@ -37,6 +37,7 @@ enum I18nKey {
 
 	themeColor = "themeColor",
 	themeMode = "themeMode",
+	themeBackgroundBlur = "themeBackgroundBlur",
 	wallpaperMode = "wallpaperMode",
 	layoutMode = "layoutMode",
 

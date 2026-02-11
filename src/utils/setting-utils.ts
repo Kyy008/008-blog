@@ -31,6 +31,36 @@ export function setHue(hue: number): void {
 	r.style.setProperty("--hue", String(hue));
 }
 
+export function getStoredBlur(): number {
+	const stored = localStorage.getItem("blur");
+	return stored ? Number.parseInt(stored) : 0;
+}
+
+export function setBlur(blur: number): void {
+	localStorage.setItem("blur", String(blur));
+	const r = document.querySelector(":root") as HTMLElement;
+	if (!r) {
+		return;
+	}
+	// 映射模糊度：0-100 (UI) -> 0-10px (CSS)
+	const blurPx = (blur / 100) * 10;
+	r.style.setProperty("--blur", `${blurPx}px`);
+	
+	// 更新全屏壁纸的模糊度
+	const wallpaper = document.querySelector("[data-fullscreen-wallpaper]") as HTMLElement;
+	if (wallpaper) {
+		// 查找所有壁纸图片并更新模糊度
+		const images = wallpaper.querySelectorAll("img");
+		images.forEach(img => {
+			if (blur > 0) {
+				img.style.filter = `blur(${blurPx}px)`;
+			} else {
+				img.style.filter = "";
+			}
+		});
+	}
+}
+
 export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 	// 获取当前主题状态的完整信息
 	const currentIsDark = document.documentElement.classList.contains("dark");

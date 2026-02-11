@@ -48,6 +48,7 @@ export const zh_TW: Translation = {
 
 	[Key.themeColor]: "主題色",
 	[Key.themeMode]: "主題模式",
+	[Key.themeBackgroundBlur]: "背景模糊度",
 	[Key.wallpaperMode]: "壁紙模式",
 	[Key.layoutMode]: "佈局模式",
 

@@ -304,6 +304,11 @@ if (siteConfig.font) {
 			const hue = localStorage.getItem("hue") || configHue;
 			document.documentElement.style.setProperty("--hue", hue);
 
+			// Load the blur from local storage
+			const blur = localStorage.getItem("blur") || "0";
+			const blurPx = (parseInt(blur) / 100) * 10;
+			document.documentElement.style.setProperty("--blur", `${blurPx}px`);
+
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(
 				window.innerHeight * (BANNER_HEIGHT_EXTEND / 100),

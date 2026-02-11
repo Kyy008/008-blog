@@ -48,6 +48,7 @@ export const ja: Translation = {
 
 	[Key.themeColor]: "テーマの色",
 	[Key.themeMode]: "テーマモード",
+	[Key.themeBackgroundBlur]: "背景のぼかし",
 	[Key.wallpaperMode]: "壁紙モード",
 	[Key.layoutMode]: "レイアウトモード",
 

@@ -48,6 +48,7 @@ export const en: Translation = {
 
 	[Key.themeColor]: "Theme Color",
 	[Key.themeMode]: "Theme Mode",
+	[Key.themeBackgroundBlur]: "Background Blur",
 	[Key.wallpaperMode]: "Wallpaper Mode",
 	[Key.layoutMode]: "Layout Mode",
 

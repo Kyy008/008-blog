@@ -15,9 +15,11 @@ import {
     getHue,
     getStoredTheme,
     getStoredWallpaperMode,
+    getStoredBlur,
     setHue,
     setTheme,
     setWallpaperMode,
+    setBlur,
 } from "@utils/setting-utils";
 import { onMount } from "svelte";
 import type { LIGHT_DARK_MODE, WALLPAPER_MODE } from "@/types/config";
@@ -28,6 +30,7 @@ let hue = 250;
 let defaultHue = 250;
 let theme: LIGHT_DARK_MODE = DEFAULT_THEME;
 let wallpaperMode: WALLPAPER_MODE = WALLPAPER_BANNER;
+let blur = 0;
 let layout: "list" | "grid" = "list";
 let isMounted = false;
 let isSmallScreen = false;
@@ -85,6 +88,7 @@ onMount(() => {
     hue = getHue();
     theme = getStoredTheme();
     wallpaperMode = getStoredWallpaperMode();
+    blur = getStoredBlur();
     
     // Layout Init
     const sessionLayout = sessionStorage.getItem("postListLayout");
@@ -129,6 +133,7 @@ onMount(() => {
 
 $: if (isMounted) {
     setHue(hue);
+    setBlur(blur);
 }
 
 </script>
@@ -193,7 +198,7 @@ $: if (isMounted) {
             <button aria-label="Random Wallpaper" class="btn-regular w-7 h-7 rounded-md active:scale-90 flex items-center justify-center transition-all"
                     on:click={() => (window as any).setRandomWallpaper && (window as any).setRandomWallpaper()}>
                     <div class="text-[var(--btn-content)]">
-                        <Icon icon="fa6-solid:dice" class="text-[0.75rem]"></Icon>
+                        <Icon icon="fa6-solid:arrow-rotate-right" class="text-[0.75rem]"></Icon>
                     </div>
             </button>
             {/if}
@@ -213,7 +218,29 @@ $: if (isMounted) {
         </div>
     </div>
 
-    <!-- 4. Layout Mode -->
+    <!-- 4. Background Blur (Only for Fullscreen) -->
+    {#if wallpaperMode === 'fullscreen'}
+    <div class="flex flex-row gap-2 mb-3 items-center justify-between">
+        <div class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3
+            before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+            before:absolute before:-left-3 before:top-[0.33rem]"
+        >
+            {i18n(I18nKey.themeBackgroundBlur)}
+        </div>
+        <div class="flex gap-1">
+            <div id="blurValue" class="transition bg-[var(--btn-regular-bg)] w-10 h-7 rounded-md flex justify-center
+            font-bold text-sm items-center text-[var(--btn-content)]">
+                {blur}
+            </div>
+        </div>
+    </div>
+    <div class="w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)] rounded select-none mb-3">
+        <input aria-label={i18n(I18nKey.themeBackgroundBlur)} type="range" min="0" max="100" bind:value={blur}
+               class="slider" id="blurSlider" step="1" style="width: 100%">
+    </div>
+    {/if}
+
+    <!-- 5. Layout Mode -->
     {#if siteConfig.postListLayout.allowSwitch && !isSmallScreen}
     <div class="flex flex-row gap-2 mb-3 items-center justify-between">
         <div class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3

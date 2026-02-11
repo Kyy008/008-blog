@@ -163,40 +163,44 @@ const renderGroups = [
 					
 					const container = document.getElementById('wallpaper-single-container');
 					
-					if (desktopSrc) {
-						const desktopDiv = document.createElement('div');
-						desktopDiv.className = 'hidden lg:block w-full h-full relative';
-						desktopDiv.style.transform = 'translateZ(0)';
-						desktopDiv.innerHTML = `
-							<img
-								src="${desktopSrc}"
-								alt="desktop wallpaper"
-								class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}"
-								style="transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blurAmount > 0 ? `filter: blur(${blurAmount}px);` : ''} opacity: 1;"
-								decoding="async"
-								loading="eager"
-							/>
-						`;
-						container.appendChild(desktopDiv);
-					}
-					
-					if (mobileSrc) {
-						const mobileDiv = document.createElement('div');
-						mobileDiv.className = 'block lg:hidden w-full h-full relative';
-						mobileDiv.style.transform = 'translateZ(0)';
-						mobileDiv.innerHTML = `
-							<img
-								src="${mobileSrc}"
-								alt="mobile wallpaper"
-								class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}"
-								style="transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blurAmount > 0 ? `filter: blur(${blurAmount}px);` : ''} opacity: 1;"
-								decoding="async"
-								loading="eager"
-							/>
-						`;
-						container.appendChild(mobileDiv);
-					}
-				})();
+					const blur = localStorage.getItem('blur') || '0';
+						const blurPx = (parseInt(blur) / 100) * 10;
+						const blurFilter = blur !== '0' ? `filter: blur(${blurPx}px);` : '';
+						
+						if (desktopSrc) {
+							const desktopDiv = document.createElement('div');
+							desktopDiv.className = 'hidden lg:block w-full h-full relative';
+							desktopDiv.style.transform = 'translateZ(0)';
+							desktopDiv.innerHTML = `
+								<img
+									src="${desktopSrc}"
+									alt="desktop wallpaper"
+									class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}"
+									style="transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blurFilter} opacity: 1;"
+									decoding="async"
+									loading="eager"
+								/>
+							`;
+							container.appendChild(desktopDiv);
+						}
+						
+						if (mobileSrc) {
+							const mobileDiv = document.createElement('div');
+							mobileDiv.className = 'block lg:hidden w-full h-full relative';
+							mobileDiv.style.transform = 'translateZ(0)';
+							mobileDiv.innerHTML = `
+								<img
+									src="${mobileSrc}"
+									alt="mobile wallpaper"
+									class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${positionClass}"
+									style="transform: translateZ(0); backface-visibility: hidden; will-change: opacity; ${blurFilter} opacity: 1;"
+									decoding="async"
+									loading="eager"
+								/>
+							`;
+							container.appendChild(mobileDiv);
+						}
+					})();
 			</script>
 		</div>
 	)}
