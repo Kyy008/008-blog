@@ -10,31 +10,12 @@ import type { SearchResult } from "@/global";
 let keywordDesktop = $state("");
 let keywordMobile = $state("");
 let result: SearchResult[] = $state([]);
-let pagefindLoaded = false;
-let initialized = $state(false);
+let pagefindReady = $state(false);
 let isDesktopSearchExpanded = $state(false);
 let debounceTimer: NodeJS.Timeout;
 let windowJustFocused = false;
 let focusTimer: NodeJS.Timeout;
 let blurTimer: NodeJS.Timeout;
-
-const fakeResult: SearchResult[] = [
-	{
-		url: url("/"),
-		meta: {
-			title: "This Is a Fake Search Result",
-		},
-		excerpt:
-			"Because the search cannot work in the <mark>dev</mark> environment.",
-	},
-	{
-		url: url("/"),
-		meta: {
-			title: "If You Want to Test the Search",
-		},
-		excerpt: "Try running <mark>npm build && npm preview</mark> instead.",
-	},
-];
 
 const togglePanel = () => {
 	const panel = document.getElementById("search-panel");
@@ -97,69 +78,64 @@ const handleResultClick = (event: Event, url: string): void => {
 	navigateToPage(url);
 };
 
+/**
+ * 新的搜索函数 - 直接使用 window.pagefind
+ */
 const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
+	// 空关键词则清空结果
 	if (!keyword) {
 		setPanelVisibility(false, isDesktop);
 		result = [];
 		return;
 	}
-	if (!initialized) {
+
+	// Pagefind 搜索逻辑
+	if (!pagefindReady || !window.pagefind) {
+		console.warn('⚠️ Pagefind not ready yet');
 		return;
 	}
+
 	try {
-		let searchResults: SearchResult[] = [];
-		if (import.meta.env.PROD && pagefindLoaded && window.pagefind) {
-			const response = await window.pagefind.search(keyword);
-			searchResults = await Promise.all(
-				response.results.map((item) => item.data()),
-			);
-		} else if (import.meta.env.DEV) {
-			searchResults = fakeResult;
-		} else {
-			searchResults = [];
-			console.error("Pagefind is not available in production environment.");
-		}
+		console.log(`🔍 Searching for: "${keyword}"`);
+
+		// 调用 Pagefind 搜索
+		const response = await window.pagefind.search(keyword);
+
+		// 获取完整的搜索结果数据
+		const searchResults = await Promise.all(
+			response.results.map((item) => item.data()),
+		);
+
+		console.log(`📝 Found ${searchResults.length} results`);
+
 		result = searchResults;
 		setPanelVisibility(result.length > 0, isDesktop);
 	} catch (error) {
-		console.error("Search error:", error);
+		console.error("❌ Search error:", error);
 		result = [];
 		setPanelVisibility(false, isDesktop);
 	}
 };
 
 onMount(() => {
-	const initializeSearch = () => {
-		initialized = true;
-		pagefindLoaded =
-			typeof window !== "undefined" &&
-			!!window.pagefind &&
-			typeof window.pagefind.search === "function";
-		console.log("Pagefind status on init:", pagefindLoaded);
+	// 监听 Pagefind 加载完成事件
+	const handlePagefindReady = () => {
+		pagefindReady = true;
+		console.log('✅ Search component: Pagefind is ready');
 	};
-	if (import.meta.env.DEV) {
-		console.log(
-			"Pagefind is not available in development mode. Using mock data.",
-		);
-		initializeSearch();
-	} else {
-		document.addEventListener("pagefindready", () => {
-			console.log("Pagefind ready event received.");
-			initializeSearch();
-		});
-		document.addEventListener("pagefindloaderror", () => {
-			console.warn(
-				"Pagefind load error event received. Search functionality will be limited.",
-			);
-			initializeSearch(); // Initialize with pagefindLoaded as false
-		});
-		// Fallback in case events are not caught or pagefind is already loaded by the time this script runs
-		setTimeout(() => {
-			if (!initialized) {
-				console.log("Fallback: Initializing search after timeout.");
-				initializeSearch();
-			}
-		}, 2000); // Adjust timeout as needed
+
+	const handlePagefindError = () => {
+		console.error('❌ Search component: Pagefind load failed');
+		pagefindReady = false;
+	};
+
+	document.addEventListener('pagefindready', handlePagefindReady);
+	document.addEventListener('pagefindloaderror', handlePagefindError);
+
+	// 检查 Pagefind 是否已经加载
+	if (window.pagefind) {
+		pagefindReady = true;
+		console.log('✅ Search component: Pagefind already loaded');
 	}
 
 	// 监听窗口焦点事件，防止切换窗口时自动展开搜索框
@@ -174,24 +150,24 @@ onMount(() => {
 	window.addEventListener('focus', handleFocus);
 
 	return () => {
+		document.removeEventListener('pagefindready', handlePagefindReady);
+		document.removeEventListener('pagefindloaderror', handlePagefindError);
 		window.removeEventListener('focus', handleFocus);
 	};
 });
 
 $effect(() => {
-	if (initialized) {
-		const keyword = keywordDesktop || keywordMobile;
-		const isDesktop = !!keywordDesktop || isDesktopSearchExpanded;
+	const keyword = keywordDesktop || keywordMobile;
+	const isDesktop = !!keywordDesktop || isDesktopSearchExpanded;
 
-		clearTimeout(debounceTimer);
-		if (keyword) {
-			debounceTimer = setTimeout(() => {
-				search(keyword, isDesktop);
-			}, 300);
-		} else {
-			result = [];
-			setPanelVisibility(false, isDesktop);
-		}
+	clearTimeout(debounceTimer);
+	if (keyword) {
+		debounceTimer = setTimeout(() => {
+			search(keyword, isDesktop);
+		}, 300);
+	} else {
+		result = [];
+		setPanelVisibility(false, isDesktop);
 	}
 });
 
