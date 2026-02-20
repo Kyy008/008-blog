@@ -1,11 +1,19 @@
 ---
-title: 半监督开放世界学习——科研研究
-published: 2026-02-13
-description: 记录我的科研课题研究，此文章是个人笔记，会持续更新
+title: CV双雄——对比学习的两座大山
+published: 2026-02-16
+description: MoCO & SimCLR
 image: ./cover.webp
 tags:
-  - 半监督学习
+  - 对比学习
   - 科研
 category: 科研
-draft: false
+draft: true
 ---
+
+# Momentum Contrast for Unsupervised Visual Representation Learning
+- CVPR 2020
+- [arxiv 链接](https://arxiv.org/abs/1911.05722)
+
+# A Simple Framework for Contrastive Learning of Visual Representations
+- ICML 2020
+- [arxiv 链接](https://arxiv.org/abs/2002.05709)
