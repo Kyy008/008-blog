@@ -20,6 +20,8 @@ draft: false
 
 过年期间闲来无事刷 B 站时，我偶然看到了一个由 AstrBot 主力开发者发布的视频，刷新了我对聊天机器人的认知：OpenClaw，一个最近爆火的，用自然语言下指令后，自动规划步骤、调用工具、执行代码、返回结果的 AI 智能体，却可以被 AstrBot 几乎完美复刻，甚至有着更高度的评价
 <iframe width="100%" height="468" src="//player.bilibili.com/player.html?bvid=BV1FmZMBiEs9&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" &autoplay=0> </iframe>
+
+
 ![](../../assets/image/index-62.png)
 仔细研究才发现，原来 AstrBot 也集成了所谓 "主动式Agent"、“Skills 技能” 等前沿智能体技术，只要进行以下配置改造，QQ bot 能身兼 “有感情的虚拟群友” 和 “极高效率的私人助理” 的身份。
 
