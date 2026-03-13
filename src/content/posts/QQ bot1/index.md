@@ -62,7 +62,7 @@ sudo docker logs napcat
 ```
 用你的手机登录 QQBot 的 QQ，扫描日志中生成的登录二维码（扫码操作也可以在下一步中，打开Napcat WebUI 链接做）
 ![](../../assets/image/index-40.png)
-放行服务器对应端口 6099 和 3001。
+放行服务器对应端口 6099。
 ![](../../assets/image/index-41.png)
 日志中可以找到 Napcat WebUI 的链接。在浏览器中将 `127.0.0.1` 替换为你的服务器公网 ip 即可访问，即`http://(你的服务器ip):6099/webui/?token=(你的token)`
 ![](../../assets/image/index-42.png)
